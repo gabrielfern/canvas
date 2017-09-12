@@ -10,24 +10,27 @@
         <script type='text/javascript'>
             // where the magic happens
 
-            canvas = document.querySelector('canvas')
+            const canvas = document.querySelector('canvas'),
+                  ctx = canvas.getContext('2d')
+                  colors = [
+                      '#4292f4',
+                      '#514c36',
+                      '#403650',
+                      '#ff0000'
+                  ],
+                  tickRate = 17 // draw every tickRate ms
+                  ballsNumber = 10 // balls in the canvas
+
+            yieldRadius = () => radius = Math.min(innerWidth, innerHeight)/10
+            yieldRadius()
             function resizeHandler() {
                 canvas.width = innerWidth
                 canvas.height = innerHeight
                 yieldRadius()
             }
-            yieldRadius = () => radius = Math.min(innerWidth, innerHeight)/10
-            resizeHandler()
             addEventListener('resize', resizeHandler)
-            ctx = canvas.getContext('2d')
+            resizeHandler()
 
-            yieldRadius()
-            colors = [
-                '#4292f4',
-                '#514c36',
-                '#403650',
-                '#ff0000'
-            ]
             function drawCircle(colorIndex, x, y, radius,
                 start = 0, end = Math.PI * 2) {
                 ctx.beginPath()
@@ -37,9 +40,30 @@
             }
             clear = () => ctx.clearRect(0, 0, innerWidth, innerHeight)
 
-            function start(total) {
+            function mainLoop() {
+                let second = 1000/tickRate
+                let times = []
+                function frameTiming(clearTime, renderTime) {
+                    if (times.length + 1 >= second) {
+                        let log = console.log
+                        let clearMed = 0
+                        let renderMed = 0
+                        times.forEach((elem) => {
+                            clearMed += elem[0]
+                        })
+                        times.forEach((elem) => {
+                            renderMed += elem[1]
+                        })
+                        // log frame timings arithmetic median
+                        log('clear: ' + (clearMed/second).toFixed(6) +
+                            '  render: ' + (renderMed/second).toFixed(6))
+                        times.length = 0
+                    }
+                    times.push([clearTime, renderTime])
+                }
+
                 let circles = []
-                for (let i = 0; i < total; i++) {
+                for (let i = 0; i < ballsNumber; i++) {
                     let circle = {
                         x: Math.random() * innerWidth,
                         y: Math.random() * innerHeight,
@@ -51,8 +75,14 @@
                 }
 
                 setInterval(() => {
+                    //console.time('clear frame')
+                    let clearTime = performance.now()
                     clear()
-                    for (let i = 0; i < total; i++) {
+                    clearTime = performance.now() - clearTime
+                    //console.timeEnd('clear frame')
+                    //console.time('render frame')
+                    let renderTime = performance.now()
+                    for (let i = 0; i < ballsNumber; i++) {
                         let circle = circles[i]
                         if (circle.y + radius >= innerHeight)
                             circle.downUpforward = false
@@ -82,9 +112,11 @@
                             circle.y -= distance
                         }
                     }
-                }, 17)
+                    frameTiming(clearTime, performance.now() - renderTime)
+                    //console.timeEnd('render frame')
+                }, tickRate)
             }
-            start(35)
+            mainLoop()
         </script>
     </body>
 </html>
