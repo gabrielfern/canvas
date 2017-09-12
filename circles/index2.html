@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Circles animation</title>
+    </head>
+
+    <body style='margin: 0'>
+        <canvas style='display: block'></canvas>
+
+        <script type='text/javascript'>
+            // where the magic happens
+
+            canvas = document.querySelector('canvas')
+            function resizeHandler() {
+                canvas.width = innerWidth
+                canvas.height = innerHeight
+                yieldRadius()
+            }
+            yieldRadius = () => radius = Math.min(innerWidth, innerHeight)/10
+            resizeHandler()
+            addEventListener('resize', resizeHandler)
+            ctx = canvas.getContext('2d')
+
+            yieldRadius()
+            colors = [
+                '#4292f4',
+                '#514c36',
+                '#403650',
+                '#ff0000'
+            ]
+            function drawCircle(colorIndex, x, y, radius,
+                start = 0, end = Math.PI * 2) {
+                ctx.beginPath()
+                ctx.arc(x, y, radius, start, end)
+                ctx.fillStyle = colors[colorIndex]
+                ctx.fill()
+            }
+            clear = () => ctx.clearRect(0, 0, innerWidth, innerHeight)
+
+            function start(total) {
+                function Circle() {
+                    this.x =  Math.random() * innerWidth
+                    this.y =  Math.random() * innerHeight
+                    this.downUpforward = true
+                    this.rightLeftforward = true
+                    this.color = Math.floor(Math.random()*colors.length)
+                    this.border = (otherCircle) => {
+                        let differenceX = Math.abs(this.x - otherCircle.x)
+                        let differenceY = Math.abs(this.y - otherCircle.y)
+                        if (differenceX <= radius * 2 && differenceY <= radius * 2) {
+                            this.downUpforward = !this.downUpforward
+                            this.rightLeftforward = !this.rightLeftforward
+                        }
+                    }
+                }
+
+                let circles = []
+                for (let i = 0; i < total; i++) {
+                    circles[i] = new Circle()
+                }
+
+                setInterval(() => {
+                    clear()
+                    for (let i = 0; i < total; i++) {
+                        let circle = circles[i]
+                        if (circle.y + radius >= innerHeight)
+                            circle.downUpforward = false
+                        else if (circle.y - radius <= 0)
+                            circle.downUpforward = true
+                        if (circle.x + radius >= innerWidth)
+                            circle.rightLeftforward = false
+                        else if (circle.x - radius <= 0)
+                            circle.rightLeftforward = true
+
+                        for (let i = 0; i < total; i++) {
+                            if (circle != circles[i]) {
+                                circle.border(circles[i])
+                            }
+                        }
+                        let distance = radius/4
+                        if (circle.downUpforward && circle.rightLeftforward) {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x += distance
+                            circle.y += distance
+                        } else if (circle.downUpforward && !circle.rightLeftforward) {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x -= distance
+                            circle.y += distance
+                        } else if (!circle.downUpforward && circle.rightLeftforward) {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x += distance
+                            circle.y -= distance
+                        } else {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x -= distance
+                            circle.y -= distance
+                        }
+                    }
+                }, 35)
+            }
+            start(3)
+        </script>
+    </body>
+</html>

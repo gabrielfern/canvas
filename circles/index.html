@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Circles animation</title>
+    </head>
+
+    <body style='margin: 0'>
+        <canvas style='display: block'></canvas>
+
+        <script type='text/javascript'>
+            // where the magic happens
+
+            canvas = document.querySelector('canvas')
+            function resizeHandler() {
+                canvas.width = innerWidth
+                canvas.height = innerHeight
+                yieldRadius()
+            }
+            yieldRadius = () => radius = Math.min(innerWidth, innerHeight)/10
+            resizeHandler()
+            addEventListener('resize', resizeHandler)
+            ctx = canvas.getContext('2d')
+
+            yieldRadius()
+            colors = [
+                '#4292f4',
+                '#514c36',
+                '#403650',
+                '#ff0000'
+            ]
+            function drawCircle(colorIndex, x, y, radius,
+                start = 0, end = Math.PI * 2) {
+                ctx.beginPath()
+                ctx.arc(x, y, radius, start, end)
+                ctx.fillStyle = colors[colorIndex]
+                ctx.fill()
+            }
+            clear = () => ctx.clearRect(0, 0, innerWidth, innerHeight)
+
+            function start(total) {
+                let circles = []
+                for (let i = 0; i < total; i++) {
+                    let circle = {
+                        x: Math.random() * innerWidth,
+                        y: Math.random() * innerHeight,
+                        downUpforward: true,
+                        rightLeftforward: true,
+                        color: Math.floor(Math.random()*colors.length)
+                    }
+                    circles[i] = circle
+                }
+
+                setInterval(() => {
+                    clear()
+                    for (let i = 0; i < total; i++) {
+                        let circle = circles[i]
+                        if (circle.y + radius >= innerHeight)
+                            circle.downUpforward = false
+                        else if (circle.y - radius <= 0)
+                            circle.downUpforward = true
+                        if (circle.x + radius >= innerWidth)
+                            circle.rightLeftforward = false
+                        else if (circle.x - radius <= 0)
+                            circle.rightLeftforward = true
+
+                        let distance = radius/4
+                        if (circle.downUpforward && circle.rightLeftforward) {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x += distance
+                            circle.y += distance
+                        } else if (circle.downUpforward && !circle.rightLeftforward) {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x -= distance
+                            circle.y += distance
+                        } else if (!circle.downUpforward && circle.rightLeftforward) {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x += distance
+                            circle.y -= distance
+                        } else {
+                            drawCircle(circle.color, circle.x, circle.y, radius)
+                            circle.x -= distance
+                            circle.y -= distance
+                        }
+                    }
+                }, 35)
+            }
+            start(35)
+        </script>
+    </body>
+</html>
