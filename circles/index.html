@@ -63,7 +63,7 @@
                         else if (circle.x - radius <= 0)
                             circle.rightLeftforward = true
 
-                        let distance = radius/4
+                        let distance = radius/8
                         if (circle.downUpforward && circle.rightLeftforward) {
                             drawCircle(circle.color, circle.x, circle.y, radius)
                             circle.x += distance
@@ -82,7 +82,7 @@
                             circle.y -= distance
                         }
                     }
-                }, 35)
+                }, 17)
             }
             start(35)
         </script>
