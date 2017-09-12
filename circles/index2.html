@@ -41,8 +41,8 @@
                 function Circle() {
                     this.x =  Math.random() * innerWidth
                     this.y =  Math.random() * innerHeight
-                    this.downUpforward = true
-                    this.rightLeftforward = true
+                    this.downUpforward = Boolean(Math.floor(Math.random()+0.5))
+                    this.rightLeftforward = Boolean(Math.floor(Math.random()+0.5))
                     this.color = Math.floor(Math.random()*colors.length)
                     this.border = (otherCircle) => {
                         let differenceX = Math.abs(this.x - otherCircle.x)

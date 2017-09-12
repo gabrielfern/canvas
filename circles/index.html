@@ -43,8 +43,8 @@
                     let circle = {
                         x: Math.random() * innerWidth,
                         y: Math.random() * innerHeight,
-                        downUpforward: true,
-                        rightLeftforward: true,
+                        downUpforward: Boolean(Math.floor(Math.random()+0.5)),
+                        rightLeftforward: Boolean(Math.floor(Math.random()+0.5)),
                         color: Math.floor(Math.random()*colors.length)
                     }
                     circles[i] = circle
