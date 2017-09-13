@@ -11,14 +11,14 @@
             // where the magic happens
 
             const canvas = document.querySelector('canvas'),
-                  ctx = canvas.getContext('2d')
+                  ctx = canvas.getContext('2d'),
                   colors = [
                       '#4292f4',
                       '#514c36',
                       '#403650',
                       '#ff0000'
                   ],
-                  tickRate = 17 // draw every tickRate ms
+                  tickRate = 17, // draw every tickRate ms
                   ballsNumber = 3 // balls in the canvas
 
             yieldRadius = () => radius = Math.min(innerWidth, innerHeight)/10
