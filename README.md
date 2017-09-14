@@ -4,4 +4,4 @@ html canvas exploring
 
 # Circles
 
-![circles animation](./resources/circles.png)
+![circles animation](./assets/circles.png)
