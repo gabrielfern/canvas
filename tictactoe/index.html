@@ -59,17 +59,17 @@
                     ctx.moveTo((innerWidth/3)*2, innerHeight - 15)
                     ctx.lineTo((innerWidth/3)*2, 15)
                     ctx.stroke()
-                    drawChar('G', grid[0][0])
-                    drawChar('G', grid[0][1])
-                    drawChar('G', grid[0][2])
+                    //drawChar('G', grid[0][0])
+                    //drawChar('G', grid[0][1])
+                    //drawChar('G', grid[0][2])
 
-                    drawChar('O', grid[1][0])
-                    drawChar('O', grid[1][1])
-                    drawChar('O', grid[1][2])
+                    //drawChar('O', grid[1][0])
+                    //drawChar('O', grid[1][1])
+                    //drawChar('O', grid[1][2])
 
-                    drawChar('X', grid[2][0])
-                    drawChar('X', grid[2][1])
-                    drawChar('X', grid[2][2])
+                    //drawChar('X', grid[2][0])
+                    //drawChar('X', grid[2][2])
+                    //drawChar('X', grid[2][1])
                 }
                 function resizeHandler() {
                     canvas.width = innerWidth
@@ -79,8 +79,27 @@
                     drawBg()
                     drawGrid()
                 }
+                function belongTo(x, y) {
+                    for (let innerList of grid) {
+                        for (let deepthList of innerList) {
+                            if (x > deepthList[0] && x < deepthList[0] + deepthList[2]) {
+                                if (y > deepthList[1] && y < deepthList[1] + deepthList[3]) {
+                                    return deepthList
+                                }
+                            }
+                        }
+                    }
+                }
                 addEventListener('resize', resizeHandler)
                 resizeHandler()
+                function clickHandler(e) {
+                    console.log(e.x, e.y)
+                    belongs = belongTo(e.x, e.y)
+                    if (belongs) {
+                        drawChar('G', belongs)
+                    }
+                }
+                addEventListener('click', clickHandler)
             }
         </script>
     </head>
