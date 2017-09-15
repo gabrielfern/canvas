@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <title>tic tac toe</title>
+
+        <script>
+            function main() {
+                const canvas = document.querySelector('canvas'),
+                      ctx = canvas.getContext('2d'),
+                      img = document.querySelector('img'),
+                      pattern = ctx.createPattern(img, 'repeat')
+                let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
+                            [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
+                            [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]]
+
+                function calcLineWidth() {
+                    ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
+                }
+                function calcFontSize() {
+                    ctx.font = Math.floor(innerWidth, innerHeight) / 10
+                     + "pt Helvetica"
+                }
+                function calcGrid() {
+                    let x = 0,
+                        y = 0,
+                        dx = (innerWidth - ctx.lineWidth*2) / 3,
+                        dy = (innerHeight - ctx.lineWidth*2) / 3
+                    for (let innerList of grid) {
+                        for (let deepthList of innerList) {
+                            deepthList[0] = x
+                            deepthList[1] = y
+                            deepthList[2] = dx
+                            deepthList[3] = dy
+                            x += dx + ctx.lineWidth
+                        }
+                        x = 0
+                        y += dy + ctx.lineWidth
+                    }
+                }
+                function drawChar(char, position) {
+                    ctx.strokeText(char, position[0] + position[2]/3,
+                                    position[1] + (position[3] - position[3]/3))
+                }
+                function drawBg() {
+                    ctx.fillStyle = pattern
+                    ctx.fillRect(0, 0, innerWidth, innerHeight)
+                }
+                function drawGrid() {
+                    calcLineWidth()
+                    calcGrid()
+                    ctx.lineCap = 'round'
+                    ctx.strokeStyle = '#a50005'
+                    ctx.beginPath()
+                    ctx.moveTo(15, innerHeight/3)
+                    ctx.lineTo(innerWidth - 15, innerHeight/3)
+                    ctx.moveTo(innerWidth - 15, (innerHeight/3) * 2)
+                    ctx.lineTo(15, (innerHeight/3) * 2)
+                    ctx.moveTo(innerWidth/3, 15)
+                    ctx.lineTo(innerWidth/3, innerHeight - 15)
+                    ctx.moveTo((innerWidth/3)*2, innerHeight - 15)
+                    ctx.lineTo((innerWidth/3)*2, 15)
+                    ctx.stroke()
+                    drawChar('G', grid[0][0])
+                    drawChar('G', grid[0][1])
+                    drawChar('G', grid[0][2])
+
+                    drawChar('O', grid[1][0])
+                    drawChar('O', grid[1][1])
+                    drawChar('O', grid[1][2])
+
+                    drawChar('X', grid[2][0])
+                    drawChar('X', grid[2][1])
+                    drawChar('X', grid[2][2])
+                }
+                function resizeHandler() {
+                    canvas.width = innerWidth
+                    canvas.height = innerHeight
+                    calcLineWidth()
+                    calcFontSize()
+                    drawBg()
+                    drawGrid()
+                }
+                addEventListener('resize', resizeHandler)
+                resizeHandler()
+            }
+        </script>
+    </head>
+
+    <body style='margin: 0' onload='main()'>
+        <canvas style='display: block'></canvas>
+        <img src='assets/dot-paper.png' style='display: none'/>
+    </body>
+</html>
