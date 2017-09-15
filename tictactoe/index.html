@@ -10,7 +10,9 @@
                       pattern = ctx.createPattern(img, 'repeat')
                 let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
-                            [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]]
+                            [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
+                    charAtMoment = 'X'
+
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -37,8 +39,17 @@
                     }
                 }
                 function drawChar(char, position) {
+                    position[4] = char
                     ctx.strokeText(char, position[0] + position[2]/3,
                                     position[1] + (position[3] - position[3]/3))
+                }
+                function drawChars() {
+                    for (let innerList of grid) {
+                        for (let deepthList of innerList) {
+                            if (deepthList[4] != '')
+                                drawChar(deepthList[4], deepthList)
+                        }
+                    }
                 }
                 function drawBg() {
                     ctx.fillStyle = pattern
@@ -46,6 +57,7 @@
                 }
                 function drawGrid() {
                     calcLineWidth()
+                    calcFontSize()
                     calcGrid()
                     ctx.lineCap = 'round'
                     ctx.strokeStyle = '#a50005'
@@ -59,6 +71,7 @@
                     ctx.moveTo((innerWidth/3)*2, innerHeight - 15)
                     ctx.lineTo((innerWidth/3)*2, 15)
                     ctx.stroke()
+                    drawChars()
                     //drawChar('G', grid[0][0])
                     //drawChar('G', grid[0][1])
                     //drawChar('G', grid[0][2])
@@ -74,11 +87,11 @@
                 function resizeHandler() {
                     canvas.width = innerWidth
                     canvas.height = innerHeight
-                    calcLineWidth()
-                    calcFontSize()
                     drawBg()
                     drawGrid()
                 }
+                addEventListener('resize', resizeHandler)
+                resizeHandler()
                 function belongTo(x, y) {
                     for (let innerList of grid) {
                         for (let deepthList of innerList) {
@@ -90,13 +103,16 @@
                         }
                     }
                 }
-                addEventListener('resize', resizeHandler)
-                resizeHandler()
                 function clickHandler(e) {
                     console.log(e.x, e.y)
                     belongs = belongTo(e.x, e.y)
                     if (belongs) {
-                        drawChar('G', belongs)
+                        if (belongs[4] == '')
+                            drawChar(charAtMoment, belongs)
+                            if (charAtMoment == 'X')
+                                charAtMoment = 'O'
+                            else
+                                charAtMoment = 'X'
                     }
                 }
                 addEventListener('click', clickHandler)
