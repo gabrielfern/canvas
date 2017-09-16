@@ -14,7 +14,6 @@
                     charAtMoment = 'X',
                     alertWinner = true
 
-
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
                 }
@@ -52,6 +51,13 @@
                         }
                     }
                 }
+                function drawWinnerLine(xBegin, yBegin, xEnd, yEnd) {
+                    ctx.moveTo(grid[yBegin][xBegin][0] + grid[yBegin][xBegin][2]/2,
+                               grid[yBegin][xBegin][1] + grid[yBegin][xBegin][3]/2)
+                    ctx.lineTo(grid[yEnd][xEnd][0] + grid[yEnd][xEnd][2]/2,
+                               grid[yEnd][xEnd][1] + grid[yEnd][xEnd][3]/2)
+                    ctx.stroke()
+                }
                 function drawBg() {
                     ctx.fillStyle = pattern
                     ctx.fillRect(0, 0, innerWidth, innerHeight)
@@ -87,53 +93,53 @@
                 }
                 function hasWinner() {
                     if (alertWinner) {
-                        for (let i = 0; i < 3; i++) {
+                        for (let x = 0; x < 3; x++) {
                             let matchup = 1
-                            for (let j = 0; j < 2; j++) {
-                                if (grid[i][j][4] == grid[i][j+1][4]
-                                    && grid[i][j][4] != '') {
+                            for (let y = 0; y < 2; y++) {
+                                if (grid[y][x][4] == grid[y+1][x][4]
+                                    && grid[y][x][4] != '') {
                                     matchup++
                                 }
                             }
                             if (matchup > 2) {
                                 alertWinner = false
-                                return alert(`the player of ${grid[i][0][4]}'s is the winner`)
+                                drawWinnerLine(x, 0, x, 2)
                             }
                         }
-                        for (let j = 0; j < 3; j++) {
+                        for (let y = 0; y < 3; y++) {
                             let matchup = 1
-                            for (let i = 0; i < 2; i++) {
-                                if (grid[i][j][4] == grid[i+1][j][4]
-                                    && grid[i][j][4] != '') {
+                            for (let x = 0; x < 2; x++) {
+                                if (grid[y][x][4] == grid[y][x+1][4]
+                                    && grid[y][x][4] != '') {
                                     matchup++
                                 }
                             }
                             if (matchup > 2) {
                                 alertWinner = false
-                                return alert(`the player of ${grid[0][j][4]}'s is the winner`)
+                                drawWinnerLine(0, y, 2, y)
                             }
                         }
                         let matchup = 1
-                        for (let i = 0, j = 0; i < 2; i++, j++) {
-                            if (grid[i][j][4] == grid[i+1][j+1][4]
-                                && grid[i][j][4] != '') {
+                        for (let x = 0, y = 0; y < 2; x++, y++) {
+                            if (grid[y][x][4] == grid[y+1][x+1][4]
+                                && grid[y][x][4] != '') {
                                 matchup++
                             }
                         }
                         if (matchup > 2) {
                             alertWinner = false
-                            return alert(`the player of ${grid[0][0][4]}'s is the winner`)
+                            drawWinnerLine(0, 0, 2, 2)
                         }
                         matchup = 1
-                        for (let i = 2, j = 0; i > 0; i--, j++) {
-                            if (grid[i][j][4] == grid[i-1][j+1][4]
-                                && grid[i][j][4] != '') {
+                        for (let x = 0, y = 2; y > 0; x++, y--) {
+                            if (grid[y][x][4] == grid[y-1][x+1][4]
+                                && grid[y][x][4] != '') {
                                 matchup++
                             }
                         }
                         if (matchup > 2) {
                             alertWinner = false
-                            return alert(`the player of ${grid[2][0][4]}'s is the winner`)
+                            drawWinnerLine(2, 0, 0, 2)
                         }
                     }
                 }
