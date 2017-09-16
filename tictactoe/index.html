@@ -11,14 +11,15 @@
                 let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
-                    charAtMoment = 'X'
+                    charAtMoment = 'X',
+                    alertWinner = true
 
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
                 }
                 function calcFontSize() {
-                    ctx.font = Math.floor(innerWidth, innerHeight) / 10
+                    ctx.font = Math.floor(innerWidth, innerHeight) / 15
                      + "pt Helvetica"
                 }
                 function calcGrid() {
@@ -72,26 +73,7 @@
                     ctx.lineTo((innerWidth/3)*2, 15)
                     ctx.stroke()
                     drawChars()
-                    //drawChar('G', grid[0][0])
-                    //drawChar('G', grid[0][1])
-                    //drawChar('G', grid[0][2])
-
-                    //drawChar('O', grid[1][0])
-                    //drawChar('O', grid[1][1])
-                    //drawChar('O', grid[1][2])
-
-                    //drawChar('X', grid[2][0])
-                    //drawChar('X', grid[2][2])
-                    //drawChar('X', grid[2][1])
                 }
-                function resizeHandler() {
-                    canvas.width = innerWidth
-                    canvas.height = innerHeight
-                    drawBg()
-                    drawGrid()
-                }
-                addEventListener('resize', resizeHandler)
-                resizeHandler()
                 function belongTo(x, y) {
                     for (let innerList of grid) {
                         for (let deepthList of innerList) {
@@ -103,16 +85,77 @@
                         }
                     }
                 }
+                function hasWinner() {
+                    if (alertWinner) {
+                        for (let i = 0; i < 3; i++) {
+                            let matchup = 1
+                            for (let j = 0; j < 2; j++) {
+                                if (grid[i][j][4] == grid[i][j+1][4]
+                                    && grid[i][j][4] != '') {
+                                    matchup++
+                                }
+                            }
+                            if (matchup > 2) {
+                                alertWinner = false
+                                return alert(`the player of ${grid[i][0][4]}'s is the winner`)
+                            }
+                        }
+                        for (let j = 0; j < 3; j++) {
+                            let matchup = 1
+                            for (let i = 0; i < 2; i++) {
+                                if (grid[i][j][4] == grid[i+1][j][4]
+                                    && grid[i][j][4] != '') {
+                                    matchup++
+                                }
+                            }
+                            if (matchup > 2) {
+                                alertWinner = false
+                                return alert(`the player of ${grid[0][j][4]}'s is the winner`)
+                            }
+                        }
+                        let matchup = 1
+                        for (let i = 0, j = 0; i < 2; i++, j++) {
+                            if (grid[i][j][4] == grid[i+1][j+1][4]
+                                && grid[i][j][4] != '') {
+                                matchup++
+                            }
+                        }
+                        if (matchup > 2) {
+                            alertWinner = false
+                            return alert(`the player of ${grid[0][0][4]}'s is the winner`)
+                        }
+                        matchup = 1
+                        for (let i = 2, j = 0; i > 0; i--, j++) {
+                            if (grid[i][j][4] == grid[i-1][j+1][4]
+                                && grid[i][j][4] != '') {
+                                matchup++
+                            }
+                        }
+                        if (matchup > 2) {
+                            alertWinner = false
+                            return alert(`the player of ${grid[2][0][4]}'s is the winner`)
+                        }
+                    }
+                }
+                function resizeHandler() {
+                    canvas.width = innerWidth
+                    canvas.height = innerHeight
+                    drawBg()
+                    drawGrid()
+                }
+                addEventListener('resize', resizeHandler)
+                resizeHandler()
                 function clickHandler(e) {
-                    console.log(e.x, e.y)
-                    belongs = belongTo(e.x, e.y)
+                    let belongs = belongTo(e.x, e.y)
                     if (belongs) {
-                        if (belongs[4] == '')
+                        if (belongs[4] == '') {
                             drawChar(charAtMoment, belongs)
+                            setTimeout(() => hasWinner(), 100)
                             if (charAtMoment == 'X')
                                 charAtMoment = 'O'
                             else
                                 charAtMoment = 'X'
+                        }
                     }
                 }
                 addEventListener('click', clickHandler)
