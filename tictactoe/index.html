@@ -12,7 +12,7 @@
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
                     charAtMoment = 'X',
-                    alertWinner = true
+                    winnerLine
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -52,6 +52,7 @@
                     }
                 }
                 function drawWinnerLine(xBegin, yBegin, xEnd, yEnd) {
+                    winnerLine = [xBegin, yBegin, xEnd, yEnd]
                     ctx.moveTo(grid[yBegin][xBegin][0] + grid[yBegin][xBegin][2]/2,
                                grid[yBegin][xBegin][1] + grid[yBegin][xBegin][3]/2)
                     ctx.lineTo(grid[yEnd][xEnd][0] + grid[yEnd][xEnd][2]/2,
@@ -79,6 +80,9 @@
                     ctx.lineTo((innerWidth/3)*2, 15)
                     ctx.stroke()
                     drawChars()
+                    if (winnerLine)
+                        drawWinnerLine(winnerLine[0], winnerLine[1],
+                                       winnerLine[2], winnerLine[3])
                 }
                 function belongTo(x, y) {
                     for (let innerList of grid) {
@@ -92,7 +96,7 @@
                     }
                 }
                 function hasWinner() {
-                    if (alertWinner) {
+                    if (winnerLine == undefined) {
                         for (let x = 0; x < 3; x++) {
                             let matchup = 1
                             for (let y = 0; y < 2; y++) {
@@ -102,7 +106,6 @@
                                 }
                             }
                             if (matchup > 2) {
-                                alertWinner = false
                                 drawWinnerLine(x, 0, x, 2)
                             }
                         }
@@ -115,7 +118,6 @@
                                 }
                             }
                             if (matchup > 2) {
-                                alertWinner = false
                                 drawWinnerLine(0, y, 2, y)
                             }
                         }
@@ -127,7 +129,6 @@
                             }
                         }
                         if (matchup > 2) {
-                            alertWinner = false
                             drawWinnerLine(0, 0, 2, 2)
                         }
                         matchup = 1
@@ -138,7 +139,6 @@
                             }
                         }
                         if (matchup > 2) {
-                            alertWinner = false
                             drawWinnerLine(2, 0, 0, 2)
                         }
                     }
@@ -156,7 +156,7 @@
                     if (belongs) {
                         if (belongs[4] == '') {
                             drawChar(charAtMoment, belongs)
-                            setTimeout(() => hasWinner(), 100)
+                            hasWinner()
                             if (charAtMoment == 'X')
                                 charAtMoment = 'O'
                             else
