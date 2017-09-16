@@ -108,6 +108,7 @@
                             }
                             if (matchup > 2) {
                                 drawWinnerLine(x, 0, x, 2)
+                                return
                             }
                         }
                         for (let y = 0; y < 3; y++) {
@@ -120,6 +121,7 @@
                             }
                             if (matchup > 2) {
                                 drawWinnerLine(0, y, 2, y)
+                                return
                             }
                         }
                         let matchup = 1
@@ -131,6 +133,7 @@
                         }
                         if (matchup > 2) {
                             drawWinnerLine(0, 0, 2, 2)
+                            return
                         }
                         matchup = 1
                         for (let x = 0, y = 2; y > 0; x++, y--) {
