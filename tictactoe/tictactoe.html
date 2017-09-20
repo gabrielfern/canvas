@@ -14,11 +14,9 @@
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
                     charAtMoment = 'X',
                     turn = false,
-                    connection,
-                    lastAction,
                     winnerLine,
                     char,
-                    init
+                    token
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -172,19 +170,16 @@
                             if (grid[y][x][4] == '') {
                                 drawChar(char, grid[y][x])
                                 hasWinner()
-                                lastAction = belongs
-                                if (init) {
-                                    let xhr = new XMLHttpRequest()
-                                    xhr.open('POST', '/init')
-                                    xhr.send(JSON.stringify(belongs))
-                                }
                                 let xhr = new XMLHttpRequest()
-                                xhr.open('POST', '/turn')
+                                xhr.open('POST',
+                                        `/set_turn?char=${char}&token=${token}`)
                                 xhr.send(JSON.stringify(belongs))
                                 if (charAtMoment == 'X')
                                     charAtMoment = 'O'
                                 else
                                     charAtMoment = 'X'
+                                turn = !turn
+                                drawGrid()
                             }
                         }
                     }
@@ -195,29 +190,34 @@
                     let xhr = new XMLHttpRequest()
                     xhr.open('GET', '/connect')
                     xhr.onload = () => {
-                        connection = JSON.parse(xhr.response)
-                        console.log(connection)
-                        char = connection[0]
+                        [char, token] = JSON.parse(xhr.response)
                         if (char == 'X') {
                             turn = true
-                            init = true
                             drawGrid()
                         }
-                        /*
                         setInterval(() => {
-                            let xhr = new XMLHttpRequest()
-                            xhr.open('POST', '/require')
-                            xhr.onload = () => {
-                                if (!xhr.response) {
-                                    let resp = JSON.parse(xhr.response)
-                                    turn = !turn
-                                    drawGrid()
-                                    drawChar(charAtMoment, grid[resp[0]][resp[1]])
+                            if (!turn) {
+                                let xhr = new XMLHttpRequest()
+                                xhr.open('GET',
+                                        `/get_turn?char=${char}&token=${token}`)
+                                xhr.onload = () => {
+                                    let resp = xhr.response
+                                    if (resp) {
+                                        resp = JSON.parse(resp)
+                                        drawChar(charAtMoment,
+                                                 grid[resp[0]][resp[1]])
+                                        hasWinner()
+                                        if (charAtMoment == 'X')
+                                            charAtMoment = 'O'
+                                        else
+                                            charAtMoment = 'X'
+                                        turn = !turn
+                                        drawGrid()
+                                    }
                                 }
+                                xhr.send()
                             }
-                            xhr.send([char, lastAction].toString())
                         }, 500)
-                        */
                         addEventListener('click', clickHandler)
                     }
                     xhr.send()

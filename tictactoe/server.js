@@ -34,7 +34,7 @@ function getConnection() {
         return ['X', connections[leng-1][2]]
     } else {
         connections[leng-1][1] = timeout
-        return ['Y', connections[leng-1][2]]
+        return ['O', connections[leng-1][2]]
     }
 }
 function getIndex(token) {
@@ -44,7 +44,6 @@ function getIndex(token) {
     }
 }
 setInterval(() => {
-    console.log(connections)
     if (connections.length > maxConnections/2)
         process.exit(15)
     for (let i = 0; i < connections.length; i++) {
@@ -87,7 +86,7 @@ http.createServer((req, res) => {
             })
             if (info.char == 'X') {
                 connections[index][0] = timeout
-                connections[index][3] = 'Y'
+                connections[index][3] = 'O'
             } else {
                 connections[index][1] = timeout
                 connections[index][3] = 'X'
