@@ -1,0 +1,226 @@
+<html>
+    <head>
+        <title>tic tac toe</title>
+        <link href="assets/Tic_tac_toe.png" rel="shortcut icon" type="image/png"/>
+
+        <script>
+            function main() {
+                const canvas = document.querySelector('canvas'),
+                      ctx = canvas.getContext('2d'),
+                      img = document.querySelector('img'),
+                      pattern = ctx.createPattern(img, 'repeat')
+                let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
+                            [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
+                            [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
+                    charAtMoment = 'X',
+                    turn = false,
+                    chars = [],
+                    lastAction,
+                    winnerLine,
+                    char
+
+                function calcLineWidth() {
+                    ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
+                }
+                function calcFontSize() {
+                    ctx.font = Math.floor(innerWidth, innerHeight) / 15
+                     + "pt Helvetica"
+                }
+                function calcGrid() {
+                    let x = 0,
+                        y = 0,
+                        dx = (innerWidth - ctx.lineWidth*2) / 3,
+                        dy = (innerHeight - ctx.lineWidth*2) / 3
+                    for (let innerList of grid) {
+                        for (let deepthList of innerList) {
+                            deepthList[0] = x
+                            deepthList[1] = y
+                            deepthList[2] = dx
+                            deepthList[3] = dy
+                            x += dx + ctx.lineWidth
+                        }
+                        x = 0
+                        y += dy + ctx.lineWidth
+                    }
+                }
+                function drawChar(char, position) {
+                    position[4] = char
+                    ctx.strokeText(char, position[0] + position[2]/3,
+                                    position[1] + (position[3] - position[3]/3))
+                }
+                function drawChars() {
+                    for (let innerList of grid) {
+                        for (let deepthList of innerList) {
+                            if (deepthList[4] != '')
+                                drawChar(deepthList[4], deepthList)
+                        }
+                    }
+                }
+                function drawWinnerLine(xBegin, yBegin, xEnd, yEnd) {
+                    winnerLine = [xBegin, yBegin, xEnd, yEnd]
+                    ctx.moveTo(grid[yBegin][xBegin][0] + grid[yBegin][xBegin][2]/2,
+                               grid[yBegin][xBegin][1] + grid[yBegin][xBegin][3]/2)
+                    ctx.lineTo(grid[yEnd][xEnd][0] + grid[yEnd][xEnd][2]/2,
+                               grid[yEnd][xEnd][1] + grid[yEnd][xEnd][3]/2)
+                    ctx.stroke()
+                }
+                function drawBg() {
+                    ctx.fillStyle = pattern
+                    ctx.fillRect(0, 0, innerWidth, innerHeight)
+                }
+                function drawGrid() {
+                    calcLineWidth()
+                    calcFontSize()
+                    calcGrid()
+                    ctx.lineCap = 'round'
+                    if (turn)
+                        ctx.strokeStyle = '#a50005'
+                    else
+                        ctx.strokeStyle = '#a05154'
+                    //ctx.strokeStyle = '#a02b2e'
+                    ctx.beginPath()
+                    ctx.moveTo(15, innerHeight/3)
+                    ctx.lineTo(innerWidth - 15, innerHeight/3)
+                    ctx.moveTo(innerWidth - 15, (innerHeight/3) * 2)
+                    ctx.lineTo(15, (innerHeight/3) * 2)
+                    ctx.moveTo(innerWidth/3, 15)
+                    ctx.lineTo(innerWidth/3, innerHeight - 15)
+                    ctx.moveTo((innerWidth/3)*2, innerHeight - 15)
+                    ctx.lineTo((innerWidth/3)*2, 15)
+                    ctx.stroke()
+                    drawChars()
+                    if (winnerLine)
+                        drawWinnerLine(winnerLine[0], winnerLine[1],
+                                       winnerLine[2], winnerLine[3])
+                }
+                function belongTo(x, y) {
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            let deepthList = grid[i][j]
+                            if (x > deepthList[0] && x < deepthList[0] + deepthList[2]) {
+                                if (y > deepthList[1] && y < deepthList[1] + deepthList[3]) {
+                                    return [i, j]
+                                }
+                            }
+                        }
+                    }
+                }
+                function hasWinner() {
+                    if (winnerLine == undefined) {
+                        for (let x = 0; x < 3; x++) {
+                            let matchup = 1
+                            for (let y = 0; y < 2; y++) {
+                                if (grid[y][x][4] == grid[y+1][x][4]
+                                    && grid[y][x][4] != '') {
+                                    matchup++
+                                }
+                            }
+                            if (matchup > 2) {
+                                drawWinnerLine(x, 0, x, 2)
+                                return
+                            }
+                        }
+                        for (let y = 0; y < 3; y++) {
+                            let matchup = 1
+                            for (let x = 0; x < 2; x++) {
+                                if (grid[y][x][4] == grid[y][x+1][4]
+                                    && grid[y][x][4] != '') {
+                                    matchup++
+                                }
+                            }
+                            if (matchup > 2) {
+                                drawWinnerLine(0, y, 2, y)
+                                return
+                            }
+                        }
+                        let matchup = 1
+                        for (let x = 0, y = 0; y < 2; x++, y++) {
+                            if (grid[y][x][4] == grid[y+1][x+1][4]
+                                && grid[y][x][4] != '') {
+                                matchup++
+                            }
+                        }
+                        if (matchup > 2) {
+                            drawWinnerLine(0, 0, 2, 2)
+                            return
+                        }
+                        matchup = 1
+                        for (let x = 0, y = 2; y > 0; x++, y--) {
+                            if (grid[y][x][4] == grid[y-1][x+1][4]
+                                && grid[y][x][4] != '') {
+                                matchup++
+                            }
+                        }
+                        if (matchup > 2) {
+                            drawWinnerLine(2, 0, 0, 2)
+                        }
+                    }
+                }
+                function resizeHandler() {
+                    canvas.width = innerWidth
+                    canvas.height = innerHeight
+                    drawBg()
+                    drawGrid()
+                }
+                function clickHandler(e) {
+                    if (turn) {
+                        let belongs = belongTo(e.x, e.y)
+                        if (belongs) {
+                            let y = belongs[0],
+                                x = belongs[1]
+                            if (grid[y][x][4] == '') {
+                                drawChar(char, grid[y][x])
+                                hasWinner()
+                                lastAction = belongs
+                                let xhr = new XMLHttpRequest()
+                                xhr.open('POST', '/')
+                                xhr.send(JSON.stringify(belongs))
+                                if (charAtMoment == 'X')
+                                    charAtMoment = 'O'
+                                else
+                                    charAtMoment = 'X'
+                            }
+                        }
+                    }
+                }
+                function connect() {
+                    addEventListener('resize', resizeHandler)
+                    resizeHandler()
+                    let xhr = new XMLHttpRequest()
+                    xhr.open('GET', '/connect')
+                    xhr.onload = () => {
+                        char = JSON.parse(xhr.response)
+                        console.log(char)
+                        if (char == 'X') {
+                            turn = true
+                            drawGrid()
+                        }
+                        /*
+                        setInterval(() => {
+                            let xhr = new XMLHttpRequest()
+                            xhr.open('POST', '/require')
+                            xhr.onload = () => {
+                                if (!xhr.response) {
+                                    let resp = JSON.parse(xhr.response)
+                                    turn = !turn
+                                    drawGrid()
+                                    drawChar(charAtMoment, grid[resp[0]][resp[1]])
+                                }
+                            }
+                            xhr.send([char, lastAction].toString())
+                        }, 500)
+                        */
+                        addEventListener('click', clickHandler)
+                    }
+                    xhr.send()
+                }
+                connect()
+            }
+        </script>
+    </head>
+
+    <body style='margin: 0; width: 100%' onload='main()'>
+        <canvas style='display: block'></canvas>
+        <img src='assets/dot-paper.png' style='display: none'/>
+    </body>
+</html>
