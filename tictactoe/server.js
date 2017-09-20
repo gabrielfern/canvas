@@ -43,6 +43,16 @@ function getIndex(token) {
             return i
     }
 }
+function getOnCount() {
+    let count = 0
+    for (let i = 0; i < connections.length; i++) {
+        if (connections[i][0] > 0)
+            count++
+            if (connections[i][1] > 0)
+                count++
+    }
+    return count
+}
 setInterval(() => {
     if (connections.length > maxConnections/2)
         process.exit(15)
@@ -57,6 +67,8 @@ setInterval(() => {
                 connections.splice(i, 1)
         }
     }
+    process.stdout.write(' '.repeat(10) + '\r')
+    process.stdout.write('Online: ' + getOnCount() + '\r')
 }, 1000)
 
 http.createServer((req, res) => {
