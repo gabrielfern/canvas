@@ -17,7 +17,8 @@
                     connection,
                     lastAction,
                     winnerLine,
-                    char
+                    char,
+                    init
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -172,6 +173,11 @@
                                 drawChar(char, grid[y][x])
                                 hasWinner()
                                 lastAction = belongs
+                                if (init) {
+                                    let xhr = new XMLHttpRequest()
+                                    xhr.open('POST', '/init')
+                                    xhr.send(JSON.stringify(belongs))
+                                }
                                 let xhr = new XMLHttpRequest()
                                 xhr.open('POST', '/turn')
                                 xhr.send(JSON.stringify(belongs))
@@ -194,6 +200,7 @@
                         char = connection[0]
                         if (char == 'X') {
                             turn = true
+                            init = true
                             drawGrid()
                         }
                         /*
