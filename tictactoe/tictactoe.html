@@ -173,7 +173,7 @@
                                 hasWinner()
                                 lastAction = belongs
                                 let xhr = new XMLHttpRequest()
-                                xhr.open('POST', '/')
+                                xhr.open('POST', '/turn')
                                 xhr.send(JSON.stringify(belongs))
                                 if (charAtMoment == 'X')
                                     charAtMoment = 'O'
@@ -190,6 +190,7 @@
                     xhr.open('GET', '/connect')
                     xhr.onload = () => {
                         connection = JSON.parse(xhr.response)
+                        console.log(connection)
                         char = connection[0]
                         if (char == 'X') {
                             turn = true

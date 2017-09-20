@@ -1,10 +1,12 @@
 const http = require('http'),
       fs = require('fs'),
+      querystring = require('querystring'),
+      {parse} = require('url'),
       port = 2100,
       host = '0.0.0.0',
-      html = fs.readFileSync('./tictactoe.html'),
+      html = fs.readFileSync('tictactoe.html'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
-      patt = fs.readFileSync('./assets/dot-paper.png'),
+      patt = fs.readFileSync('assets/dot-paper.png'),
       maxConnections = 20,
       tokenLeng = 10,
       timeout = 10
@@ -27,12 +29,18 @@ function yieldToken(length) {
 function getConnection() {
     let leng = connections.length
     if (leng == 0 || connections[leng-1][1] > 1) {
-        connections.push([timeout, 0, yieldToken(tokenLeng)])
+        connections.push([timeout, 0, yieldToken(tokenLeng), 'X', null])
         leng = connections.length
         return ['X', connections[leng-1][2]]
     } else {
         connections[leng-1][1] = timeout
         return ['Y', connections[leng-1][2]]
+    }
+}
+function getIndex(token) {
+    for (let i = 0; i < connections.length; i++) {
+        if (token == connections[i][2])
+            return i
     }
 }
 setInterval(() => {
@@ -47,17 +55,23 @@ setInterval(() => {
 }, 1000)
 
 http.createServer((req, res) => {
-    if (req.method == 'POST') {
-        req.on('data', (data) => {
-            console.log(JSON.parse(data.toString()))
-        })
-    } else if (req.url == '/connect') {
+    let url = parse(req.url),
+        path = url.pathname,
+        query = url.query
+    if (path == '/connect') {
         res.end(JSON.stringify(getConnection()))
-    }
-    else if (req.url == '/assets/Tic_tac_toe.png')
+    } else if (path == '/turn') {
+        let info = querystring.parse(query),
+            index = getIndex(info.token)
+        req.on('data', (data) => {
+            //console.log(JSON.parse(data.toString()))
+            res.end(JSON.stringify(getConnection()))
+        })
+    } else if (path == '/assets/Tic_tac_toe.png') {
         res.end(logo)
-    else if (req.url == '/assets/dot-paper.png')
+    } else if (path == '/assets/dot-paper.png') {
         res.end(patt)
-    else
+    } else {
         res.end(html)
+    }
 }).listen(port, host)
