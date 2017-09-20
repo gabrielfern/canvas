@@ -68,34 +68,32 @@ http.createServer((req, res) => {
 
     if (path == '/connect') {
         res.end(JSON.stringify(getConnection()))
-    } else if (path == '/init') {
-        let index = getIndex(info.token)
-        if (index != undefined) {
-            req.on('data', (data) => {
-                connections[index][0] = timeout
-                connections[index][3] = 'Y'
-                connections[index][4] = JSON.parse(data.toString())
-            })
-        }
-        res.end()
-    } else if (path == '/turn') {
+    } else if (path == '/get_turn') {
         let index = getIndex(info.token)
         if (index != undefined && connections[index][3] == info.char) {
-            req.on('data', (data) => {
-                if (info.char == 'X') {
-                    connections[index][0] = timeout
-                    connections[index][3] = 'Y'
-                } else {
-                    connections[index][1] = timeout
-                    connections[index][3] = 'X'
-                }
-                let buffer = connections[index][4]
-                connections[index][4] = JSON.parse(data.toString())
-                res.end(JSON.stringify(buffer))
-            })
+            if (info.char == 'X')
+                connections[index][0] = timeout
+            else
+                connections[index][1] = timeout
+            res.end(JSON.stringify(connections[index][4]))
         } else {
             res.end()
         }
+    } else if (path == '/set_turn') {
+        let index = getIndex(info.token)
+        if (index != undefined && connections[index][3] == info.char) {
+            req.on('data', (data) => {
+                connections[index][4] = JSON.parse(data.toString())
+            })
+            if (info.char == 'X') {
+                connections[index][0] = timeout
+                connections[index][3] = 'Y'
+            } else {
+                connections[index][1] = timeout
+                connections[index][3] = 'X'
+            }
+        }
+        res.end()
     } else if (path == '/timeout') {
         res.end(`${timeout}`)
     } else if (path == '/assets/Tic_tac_toe.png') {
