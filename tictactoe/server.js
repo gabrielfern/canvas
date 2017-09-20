@@ -1,6 +1,6 @@
 const http = require('http'),
       fs = require('fs'),
-      port = 2555,
+      port = 2100,
       host = '0.0.0.0',
       html = fs.readFileSync('./tictactoe.html'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
