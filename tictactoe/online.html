@@ -16,20 +16,23 @@
                     turn = false,
                     winnerLine,
                     char,
-                    token
+                    token,
+                    timeout,
+                    topBar,
+                    timeCount = 10
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
                 }
                 function calcFontSize() {
-                    ctx.font = Math.floor(innerWidth, innerHeight) / 15
+                    ctx.font = Math.floor(innerWidth, innerHeight) / 25
                      + "pt Helvetica"
                 }
                 function calcGrid() {
                     let x = 0,
-                        y = 0,
+                        y = topBar,
                         dx = (innerWidth - ctx.lineWidth*2) / 3,
-                        dy = (innerHeight - ctx.lineWidth*2) / 3
+                        dy = (innerHeight - ctx.lineWidth*2 - topBar) / 3
                     for (let innerList of grid) {
                         for (let deepthList of innerList) {
                             deepthList[0] = x
@@ -63,11 +66,22 @@
                                grid[yEnd][xEnd][1] + grid[yEnd][xEnd][3]/2)
                     ctx.stroke()
                 }
+                function drawTimeBar() {
+                    if (timeCount > 0) {
+                        ctx.lineWidth = ctx.lineWidth / 3
+                        ctx.moveTo(15, topBar/2)
+                        ctx.lineTo((innerWidth/10 * timeCount) - 15, topBar/2)
+                        ctx.stroke()
+                    }
+                }
                 function drawBg() {
+                    topBar = innerHeight / 30
                     ctx.fillStyle = pattern
-                    ctx.fillRect(0, 0, innerWidth, innerHeight)
+                    ctx.fillRect(0, topBar, innerWidth, innerHeight)
                 }
                 function drawGrid() {
+                    ctx.clearRect(0, 0, innerWidth, innerHeight)
+                    drawBg()
                     calcLineWidth()
                     calcFontSize()
                     calcGrid()
@@ -82,12 +96,13 @@
                     ctx.lineTo(innerWidth - 15, innerHeight/3)
                     ctx.moveTo(innerWidth - 15, (innerHeight/3) * 2)
                     ctx.lineTo(15, (innerHeight/3) * 2)
-                    ctx.moveTo(innerWidth/3, 15)
+                    ctx.moveTo(innerWidth/3, 15 + topBar)
                     ctx.lineTo(innerWidth/3, innerHeight - 15)
                     ctx.moveTo((innerWidth/3)*2, innerHeight - 15)
-                    ctx.lineTo((innerWidth/3)*2, 15)
+                    ctx.lineTo((innerWidth/3)*2, 15 + topBar)
                     ctx.stroke()
                     drawChars()
+                    drawTimeBar()
                     if (winnerLine)
                         drawWinnerLine(winnerLine[0], winnerLine[1],
                                        winnerLine[2], winnerLine[3])
@@ -158,7 +173,6 @@
                 function resizeHandler() {
                     canvas.width = innerWidth
                     canvas.height = innerHeight
-                    drawBg()
                     drawGrid()
                 }
                 function clickHandler(e) {
@@ -179,6 +193,7 @@
                                 else
                                     charAtMoment = 'X'
                                 turn = !turn
+                                timeCount = 10
                                 drawGrid()
                             }
                         }
@@ -212,6 +227,7 @@
                                         else
                                             charAtMoment = 'X'
                                         turn = !turn
+                                        timeCount = 10
                                         drawGrid()
                                     }
                                 }
@@ -221,6 +237,18 @@
                         addEventListener('click', clickHandler)
                     }
                     xhr.send()
+                    let xhr2 = new XMLHttpRequest()
+                    xhr2.open('GET', '/timeout')
+                    xhr2.onload = () => {
+                        timeout = Number(xhr2.response)
+                        let timeHandler = () => {
+                            drawGrid()
+                            timeCount--
+                        }
+                        timeHandler()
+                        setInterval(timeHandler, timeout*1000 / 10)
+                    }
+                    xhr2.send()
                 }
                 connect()
             }
