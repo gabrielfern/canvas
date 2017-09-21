@@ -9,7 +9,7 @@ const http = require('http'),
       online = fs.readFileSync('online.html'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
       patt = fs.readFileSync('assets/dot-paper.png'),
-      maxConnections = 20,
+      maxConnections = 30,
       tokenLeng = 10,
       timeout = 10
 

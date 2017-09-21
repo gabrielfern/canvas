@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>tic tac toe</title>
+        <title>Tic Tac Toe - Online</title>
         <link href="assets/Tic_tac_toe.png" rel="shortcut icon" type="image/png"/>
 
         <script>
@@ -19,7 +19,7 @@
                     token,
                     timeout,
                     topBar,
-                    timeCount = 200
+                    timeCount = 100
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -70,7 +70,7 @@
                     if (timeCount > 0) {
                         ctx.lineWidth = ctx.lineWidth / 3
                         ctx.moveTo(0, topBar/2)
-                        ctx.lineTo((innerWidth/200 * timeCount), topBar/2)
+                        ctx.lineTo((innerWidth/100 * timeCount), topBar/2)
                         ctx.stroke()
                     }
                 }
@@ -193,7 +193,7 @@
                                 else
                                     charAtMoment = 'X'
                                 turn = !turn
-                                timeCount = 200
+                                timeCount = 100
                                 drawGrid()
                             }
                         }
@@ -227,7 +227,7 @@
                                         else
                                             charAtMoment = 'X'
                                         turn = !turn
-                                        timeCount = 200
+                                        timeCount = 100
                                         drawGrid()
                                     }
                                 }
@@ -246,7 +246,7 @@
                             timeCount--
                         }
                         timeHandler()
-                        setInterval(timeHandler, timeout*1000 / 200)
+                        setInterval(timeHandler, timeout*1000 / 100)
                     }
                     xhr2.send()
                 }
