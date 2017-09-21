@@ -43,11 +43,8 @@
                     xhr.open('GET', '/on_count')
                     xhr.onload = () => {
                         let resp = xhr.response
-                        if (resp) {
+                        if (resp)
                             span.innerText = 'Online: ' + resp
-                        } else {
-                            span.innerText = 'Online: null'
-                        }
                     }
                     xhr.send()
                 }

@@ -14,12 +14,13 @@
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
                     charAtMoment = 'X',
                     turn = false,
-                    winnerLine,
                     char,
                     token,
-                    timeout,
                     topBar,
-                    timeCount = 100
+                    timeout,
+                    timeCount,
+                    timeFactor,
+                    winnerLine
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -70,7 +71,7 @@
                     if (timeCount > 0) {
                         ctx.lineWidth = ctx.lineWidth / 3
                         ctx.moveTo(0, topBar/2)
-                        ctx.lineTo((innerWidth/100 * timeCount), topBar/2)
+                        ctx.lineTo((innerWidth/timeFactor * timeCount), topBar/2)
                         ctx.stroke()
                     }
                 }
@@ -102,7 +103,8 @@
                     ctx.lineTo((innerWidth/3)*2, 15 + topBar)
                     ctx.stroke()
                     drawChars()
-                    drawTimeBar()
+                    if (timeout)
+                        drawTimeBar()
                     if (winnerLine)
                         drawWinnerLine(winnerLine[0], winnerLine[1],
                                        winnerLine[2], winnerLine[3])
@@ -193,7 +195,7 @@
                                 else
                                     charAtMoment = 'X'
                                 turn = !turn
-                                timeCount = 100
+                                timeCount = timeFactor
                                 drawGrid()
                             }
                         }
@@ -203,9 +205,23 @@
                     addEventListener('resize', resizeHandler)
                     resizeHandler()
                     let xhr = new XMLHttpRequest()
-                    xhr.open('GET', '/connect')
+                    xhr.open('GET', '/timeout')
                     xhr.onload = () => {
-                        [char, token] = JSON.parse(xhr.response)
+                        timeout = Number(xhr.response)
+                        timeCount = timeout*20
+                        timeFactor = timeCount
+                        let timeHandler = () => {
+                            drawGrid()
+                            timeCount--
+                        }
+                        timeHandler()
+                        setInterval(timeHandler, timeout*1000 / timeFactor)
+                    }
+                    xhr.send()
+                    let xhr2 = new XMLHttpRequest()
+                    xhr2.open('GET', '/connect')
+                    xhr2.onload = () => {
+                        [char, token] = JSON.parse(xhr2.response)
                         if (char == 'X') {
                             turn = true
                             drawGrid()
@@ -227,7 +243,7 @@
                                         else
                                             charAtMoment = 'X'
                                         turn = !turn
-                                        timeCount = 100
+                                        timeCount = timeFactor
                                         drawGrid()
                                     }
                                 }
@@ -235,18 +251,6 @@
                             }
                         }, 500)
                         addEventListener('click', clickHandler)
-                    }
-                    xhr.send()
-                    let xhr2 = new XMLHttpRequest()
-                    xhr2.open('GET', '/timeout')
-                    xhr2.onload = () => {
-                        timeout = Number(xhr2.response)
-                        let timeHandler = () => {
-                            drawGrid()
-                            timeCount--
-                        }
-                        timeHandler()
-                        setInterval(timeHandler, timeout*1000 / 100)
                     }
                     xhr2.send()
                 }
