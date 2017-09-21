@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <title>tic tac toe</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="assets/Tic_tac_toe.png" rel="shortcut icon" type="image/png"/>
+
+        <style>
+            body {
+                margin: 0;
+                color: #a50005;
+                font-family: Monospace
+            }
+            div {
+                background-color: #3f3f3f;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                margin-left: 10px;
+                margin-right: 10px;
+                border-style: solid;
+                border-color: #a50005;
+                border-width: 2px;
+                border-radius: 5px;
+                padding: 10px;
+                font-size: 20px;
+                text-align: center
+            }
+            img:hover {
+                cursor: not-allowed
+            }
+            p:hover {
+                cursor: pointer
+            }
+            span:hover {
+                cursor: progress
+            }
+        </style>
+
+        <script>
+            function main() {
+                const span = document.querySelector('span')
+                function getOnCount() {
+                    let xhr = new XMLHttpRequest()
+                    xhr.open('GET', '/on_count')
+                    xhr.onload = () => {
+                        let resp = xhr.response
+                        if (resp) {
+                            span.innerText = 'Online: ' + resp
+                        } else {
+                            span.innerText = 'Online: null'
+                        }
+                    }
+                    xhr.send()
+                }
+                getOnCount()
+                setInterval(getOnCount, 1000)
+            }
+        </script>
+    </head>
+
+    <body onload='main()' background="assets/dot-paper.png">
+        <div>
+            <img src='assets/Tic_tac_toe.png'></img>
+            <p onclick='location="/offline"'>Play Offline</p>
+            <p onclick='location="/online"'>Play Online</p>
+        </div>
+        <div>
+            <span></span>
+        </div>
+    </body>
+</html>

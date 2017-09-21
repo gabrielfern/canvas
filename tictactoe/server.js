@@ -4,6 +4,7 @@ const http = require('http'),
       {parse} = require('url'),
       port = 2100,
       host = '0.0.0.0',
+      html = fs.readFileSync('index.html'),
       offline = fs.readFileSync('offline.html'),
       online = fs.readFileSync('online.html'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
@@ -108,13 +109,17 @@ http.createServer((req, res) => {
         res.end()
     } else if (path == '/timeout') {
         res.end(`${timeout}`)
+    } else if (path == '/on_count') {
+        res.end(`${getOnCount()}`)
     } else if (path == '/assets/Tic_tac_toe.png') {
         res.end(logo)
     } else if (path == '/assets/dot-paper.png') {
         res.end(patt)
     } else if (path == '/offline') {
         res.end(offline)
-    } else {
+    } else if (path == '/online') {
         res.end(online)
+    } else {
+        res.end(html)
     }
 }).listen(port, host)
