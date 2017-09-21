@@ -4,7 +4,8 @@ const http = require('http'),
       {parse} = require('url'),
       port = 2100,
       host = '0.0.0.0',
-      html = fs.readFileSync('online.html'),
+      offline = fs.readFileSync('offline.html'),
+      online = fs.readFileSync('online.html'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
       patt = fs.readFileSync('assets/dot-paper.png'),
       maxConnections = 20,
@@ -111,7 +112,9 @@ http.createServer((req, res) => {
         res.end(logo)
     } else if (path == '/assets/dot-paper.png') {
         res.end(patt)
+    } else if (path == '/offline') {
+        res.end(offline)
     } else {
-        res.end(html)
+        res.end(online)
     }
 }).listen(port, host)
