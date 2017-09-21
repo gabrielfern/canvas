@@ -19,7 +19,7 @@
                     token,
                     timeout,
                     topBar,
-                    timeCount = 10
+                    timeCount = 200
 
                 function calcLineWidth() {
                     ctx.lineWidth = Math.floor(innerWidth, innerHeight) / 60
@@ -69,8 +69,8 @@
                 function drawTimeBar() {
                     if (timeCount > 0) {
                         ctx.lineWidth = ctx.lineWidth / 3
-                        ctx.moveTo(15, topBar/2)
-                        ctx.lineTo((innerWidth/10 * timeCount) - 15, topBar/2)
+                        ctx.moveTo(0, topBar/2)
+                        ctx.lineTo((innerWidth/200 * timeCount), topBar/2)
                         ctx.stroke()
                     }
                 }
@@ -193,7 +193,7 @@
                                 else
                                     charAtMoment = 'X'
                                 turn = !turn
-                                timeCount = 10
+                                timeCount = 200
                                 drawGrid()
                             }
                         }
@@ -227,7 +227,7 @@
                                         else
                                             charAtMoment = 'X'
                                         turn = !turn
-                                        timeCount = 10
+                                        timeCount = 200
                                         drawGrid()
                                     }
                                 }
@@ -246,7 +246,7 @@
                             timeCount--
                         }
                         timeHandler()
-                        setInterval(timeHandler, timeout*1000 / 10)
+                        setInterval(timeHandler, timeout*1000 / 200)
                     }
                     xhr2.send()
                 }
