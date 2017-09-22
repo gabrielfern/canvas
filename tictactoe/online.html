@@ -16,7 +16,6 @@
                     turn = false,
                     char,
                     token,
-                    topBar,
                     timeout,
                     timeCount,
                     timeFactor,
@@ -31,9 +30,9 @@
                 }
                 function calcGrid() {
                     let x = 0,
-                        y = topBar,
-                        dx = (innerWidth - ctx.lineWidth*2) / 3,
-                        dy = (innerHeight - ctx.lineWidth*2 - topBar) / 3
+                        y = 10,
+                        dx = (canvas.width - ctx.lineWidth*2) / 3,
+                        dy = (canvas.height - 10 - ctx.lineWidth*2) / 3
                     for (let innerList of grid) {
                         for (let deepthList of innerList) {
                             deepthList[0] = x
@@ -69,15 +68,14 @@
                 }
                 function drawTimeBar() {
                     if (timeCount > 0) {
-                        ctx.lineWidth = ctx.lineWidth / 3
-                        ctx.moveTo(0, topBar/2)
-                        ctx.lineTo((innerWidth/timeFactor * timeCount), topBar/2)
+                        ctx.lineWidth = 5
+                        ctx.moveTo(0, 5)
+                        ctx.lineTo((innerWidth/timeFactor * timeCount), 5)
                         ctx.stroke()
                     }
                 }
                 function drawGrid() {
-                    ctx.clearRect(0, 0, innerWidth, innerHeight)
-                    topBar = innerHeight / 30
+                    ctx.clearRect(0, 0, innerWidth, innerHeight - 50)
                     calcLineWidth()
                     calcFontSize()
                     calcGrid()
@@ -88,14 +86,14 @@
                         ctx.strokeStyle = '#a05154'
                     //ctx.strokeStyle = '#a02b2e'
                     ctx.beginPath()
-                    ctx.moveTo(15, innerHeight/3)
-                    ctx.lineTo(innerWidth - 15, innerHeight/3)
-                    ctx.moveTo(innerWidth - 15, (innerHeight/3) * 2)
-                    ctx.lineTo(15, (innerHeight/3) * 2)
-                    ctx.moveTo(innerWidth/3, 15 + topBar)
-                    ctx.lineTo(innerWidth/3, innerHeight - 15)
-                    ctx.moveTo((innerWidth/3)*2, innerHeight - 15)
-                    ctx.lineTo((innerWidth/3)*2, 15 + topBar)
+                    ctx.moveTo(15, (canvas.height-10) / 3)
+                    ctx.lineTo(innerWidth - 15, (canvas.height-10) / 3)
+                    ctx.moveTo(innerWidth - 15, (canvas.height-10) / 3 * 2)
+                    ctx.lineTo(15, (canvas.height-10) / 3 * 2)
+                    ctx.moveTo(innerWidth/3, 25)
+                    ctx.lineTo(innerWidth/3, canvas.height - 15)
+                    ctx.moveTo(innerWidth/3 * 2, canvas.height - 15)
+                    ctx.lineTo(innerWidth/3 * 2, 25)
                     ctx.stroke()
                     drawChars()
                     if (timeout)
@@ -169,12 +167,12 @@
                 }
                 function resizeHandler() {
                     canvas.width = innerWidth
-                    canvas.height = innerHeight
+                    canvas.height = innerHeight - 50
                     drawGrid()
                 }
                 function clickHandler(e) {
                     if (turn) {
-                        let belongs = belongTo(e.x, e.y)
+                        let belongs = belongTo(e.x, e.y - 50)
                         if (belongs) {
                             let y = belongs[0],
                                 x = belongs[1]
@@ -197,6 +195,7 @@
                     }
                 }
                 function connect() {
+                    topBar = 60
                     addEventListener('resize', resizeHandler)
                     resizeHandler()
                     let xhr = new XMLHttpRequest()
@@ -245,11 +244,11 @@
                                 xhr.send()
                             }
                         }, 500)
-                        addEventListener('click', clickHandler)
+                        canvas.addEventListener('click', clickHandler)
                     }
                     xhr2.send()
                 }
-                //connect()
+                connect()
             }
             function search() {
                 let div = document.querySelector('#toHide'),
@@ -290,7 +289,7 @@
     </head>
 
     <body onload='main()' background="assets/dot-paper.png">
-        <div class='top' id='toHide'>
+        <div class='top' id='toHide' style='display: none'>
             <p onclick='setToInput()'>Give us a nickname</p>
             <input type='text' maxlength='8'></input>
             <p onclick='search()'>Search opponent</p>
@@ -298,6 +297,11 @@
         <div class='top' id='toShow' style='display: none'>
             <pre></pre>
         </div>
-        <canvas style='display: none'></canvas>
+        <div class='top' id='game-bar'>
+            <span>opponent</span>
+            <span>vs</span>
+            <span>opponent2</span>
+        </div>
+        <canvas style='display: block'></canvas>
     </body>
 </html>

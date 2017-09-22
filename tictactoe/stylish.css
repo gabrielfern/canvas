@@ -31,6 +31,11 @@ div {
     margin-top: 15px
 }
 
+#game-bar {
+    margin-bottom: 8px;
+    height: 20
+}
+
 input {
     color: #a50005;
     font-family: Monospace;
