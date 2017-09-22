@@ -94,7 +94,7 @@ http.createServer((req, res) => {
         } else {
             res.end()
         }
-    } else if (path == 'set_game') {
+    } else if (path == '/set_game') {
         req.on('data', (data) => {
             res.end(JSON.stringify(getConnection(data.toString())))
         })

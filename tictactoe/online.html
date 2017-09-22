@@ -6,7 +6,8 @@
         <link rel="stylesheet" type="text/css" href="stylish.css"/>
 
         <script>
-            function main() {
+            function main(timeout, timeCount, timeFactor, char, token) {
+                console.log(timeout, timeCount, timeFactor, char, token)
                 const canvas = document.querySelector('canvas'),
                       ctx = canvas.getContext('2d')
                 let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
@@ -14,11 +15,13 @@
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
                     charAtMoment = 'X',
                     turn = false,
+                    /*
                     char,
                     token,
                     timeout,
                     timeCount,
                     timeFactor,
+                    */
                     winnerLine
 
                 function calcLineWidth() {
@@ -247,7 +250,44 @@
                     }
                     xhr2.send()
                 }
-                connect()
+                //connect()
+                addEventListener('resize', resizeHandler)
+                resizeHandler()
+                let timeHandler = () => {
+                    drawGrid()
+                    timeCount--
+                }
+                timeHandler()
+                setInterval(timeHandler, timeout*1000 / timeFactor)
+                if (char == 'X') {
+                    turn = true
+                    drawGrid()
+                }
+                setInterval(() => {
+                    if (!turn) {
+                        let xhr = new XMLHttpRequest()
+                        xhr.open('GET',
+                                `/get_turn?char=${char}&token=${token}`)
+                        xhr.onload = () => {
+                            let resp = xhr.response
+                            if (resp) {
+                                resp = JSON.parse(resp)
+                                drawChar(charAtMoment,
+                                         grid[resp[0]][resp[1]])
+                                hasWinner()
+                                if (charAtMoment == 'X')
+                                    charAtMoment = 'O'
+                                else
+                                    charAtMoment = 'X'
+                                turn = !turn
+                                timeCount = timeFactor
+                                drawGrid()
+                            }
+                        }
+                        xhr.send()
+                    }
+                }, 500)
+                canvas.addEventListener('click', clickHandler)
             }
             function search() {
                 let div = document.querySelector('#toHide'),
@@ -256,6 +296,8 @@
                     input = document.querySelector('input'),
                     opp = document.querySelector('#opp'),
                     opp2 = document.querySelector('#opp2'),
+                    gameBar = document.querySelector('#game-bar'),
+                    canvas = document.querySelector('canvas')
                     dotsStage = 1
                 div.style.display = 'none'
                 div2.style.display = 'block'
@@ -275,17 +317,57 @@
                         dotsStage++
                 }, 1000)
 
-                let xhr = new XMLHttpRequest()
-                xhr.open('POST', '/set_game')
+                let timeout,
+                    timeCount,
+                    timeFactor,
+                    xhr = new XMLHttpRequest()
+                xhr.open('GET', '/timeout')
                 xhr.onload = () => {
-                    let resp = JSON.parse(xhr.response)
-                    if (resp[0] == 'X')
-                        opp.innerText = input.innerText
-                    else
-                        opp2.innerText = input.innerText
-
+                    timeout = Number(xhr.response)
+                    timeCount = timeout*20
+                    timeFactor = timeCount
                 }
-                xhr.send(input.innerText)
+                xhr.send()
+
+                let char,
+                    token,
+                    xhr2 = new XMLHttpRequest()
+                xhr2.open('POST', '/set_game')
+                xhr2.onload = () => {
+                    let resp = JSON.parse(xhr2.response)
+                    if (resp[2] != undefined) {
+                        opp2.innerText = input.value
+                        opp.innerText = resp[2]
+                        char = resp[0]
+                        token = resp[1]
+                        div2.style.display = 'none'
+                        gameBar.style.display = 'block'
+                        canvas.style.display = 'block'
+                        main(timeout, timeCount, timeFactor, char, token)
+                    } else {
+                        opp.innerText = input.value
+                        char = resp[0]
+                        token = resp[1]
+                        let inter = setInterval(() => {
+                            let xhr = new XMLHttpRequest()
+                            xhr.open('GET', `/get_game?token=${token}`)
+                            xhr.onload = () => {
+                                let resp2 = xhr.response
+                                if (resp2 != '') {
+                                    clearInterval(inter)
+                                    opp2.innerText = resp2
+                                    //opp.innerText = input.value
+                                    div2.style.display = 'none'
+                                    gameBar.style.display = 'block'
+                                    canvas.style.display = 'block'
+                                    main(timeout, timeCount, timeFactor, char, token)
+                                }
+                            }
+                            xhr.send()
+                        }, 500)
+                    }
+                }
+                xhr2.send(input.value)
             }
             function setToInput() {
                 let input = document.querySelector('input')
@@ -302,7 +384,7 @@
         </script>
     </head>
 
-    <body onload='main()' background="assets/dot-paper.png">
+    <body background="assets/dot-paper.png">
         <div class='top' id='toHide'>
             <p onclick='setToInput()'>Give us a nickname</p>
             <input type='text' maxlength='8'></input>
