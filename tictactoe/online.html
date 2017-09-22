@@ -195,7 +195,6 @@
                     }
                 }
                 function connect() {
-                    topBar = 60
                     addEventListener('resize', resizeHandler)
                     resizeHandler()
                     let xhr = new XMLHttpRequest()
@@ -253,25 +252,40 @@
             function search() {
                 let div = document.querySelector('#toHide'),
                     div2 = document.querySelector('#toShow'),
-                    span = document.querySelector('pre'),
+                    pre = document.querySelector('pre'),
+                    input = document.querySelector('input'),
+                    opp = document.querySelector('#opp'),
+                    opp2 = document.querySelector('#opp2'),
                     dotsStage = 1
                 div.style.display = 'none'
                 div2.style.display = 'block'
-                span.innerText = 'Searching   '
+                pre.innerText = 'Searching   '
                 setInterval(() => {
                     if (dotsStage == 0)
-                        span.innerText = 'Searching' + '   '
+                        pre.innerText = 'Searching' + '   '
                     else if (dotsStage == 1)
-                        span.innerText = 'Searching' + '.  '
+                        pre.innerText = 'Searching' + '.  '
                     else if (dotsStage == 2)
-                        span.innerText = 'Searching' + '.. '
+                        pre.innerText = 'Searching' + '.. '
                     else
-                        span.innerText = 'Searching' + '...'
+                        pre.innerText = 'Searching' + '...'
                     if (dotsStage > 2)
                         dotsStage = 0
                     else
                         dotsStage++
                 }, 1000)
+
+                let xhr = new XMLHttpRequest()
+                xhr.open('POST', '/set_game')
+                xhr.onload = () => {
+                    let resp = JSON.parse(xhr.response)
+                    if (resp[0] == 'X')
+                        opp.innerText = input.innerText
+                    else
+                        opp2.innerText = input.innerText
+
+                }
+                xhr.send(input.innerText)
             }
             function setToInput() {
                 let input = document.querySelector('input')
@@ -289,7 +303,7 @@
     </head>
 
     <body onload='main()' background="assets/dot-paper.png">
-        <div class='top' id='toHide' style='display: none'>
+        <div class='top' id='toHide'>
             <p onclick='setToInput()'>Give us a nickname</p>
             <input type='text' maxlength='8'></input>
             <p onclick='search()'>Search opponent</p>
@@ -297,11 +311,11 @@
         <div class='top' id='toShow' style='display: none'>
             <pre></pre>
         </div>
-        <div class='top' id='game-bar'>
-            <span>opponent</span>
+        <div class='top' id='game-bar' style='display: none'>
+            <span id='opp'>opponent</span>
             <span>vs</span>
-            <span>opponent2</span>
+            <span id='opp2'>opponent2</span>
         </div>
-        <canvas style='display: block'></canvas>
+        <canvas style='display: none'></canvas>
     </body>
 </html>

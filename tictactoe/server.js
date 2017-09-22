@@ -29,15 +29,17 @@ function yieldToken(length) {
     }
     return token
 }
-function getConnection() {
+function getConnection(nickName) {
     let leng = connections.length
     if (leng == 0 || connections[leng-1][1] > 1) {
-        connections.push([timeout, 0, yieldToken(tokenLeng), 'X', null])
+        connections.push([timeout, 0, yieldToken(tokenLeng), 'X', null,
+                            nickName, null])
         leng = connections.length
         return ['X', connections[leng-1][2]]
     } else {
         connections[leng-1][1] = timeout
-        return ['O', connections[leng-1][2]]
+        connections[leng-1][6] = nickName
+        return ['O', connections[leng-1][2], connections[leng-1][5]]
     }
 }
 function getIndex(token) {
@@ -82,6 +84,20 @@ http.createServer((req, res) => {
 
     if (path == '/connect') {
         res.end(JSON.stringify(getConnection()))
+    } else if (path == '/get_game') {
+        let index = getIndex(info.token)
+        if (index != undefined) {
+            if (connections[index][1] > 0)
+                res.end(connections[index][6])
+            else
+                res.end()
+        } else {
+            res.end()
+        }
+    } else if (path == 'set_game') {
+        req.on('data', (data) => {
+            res.end(JSON.stringify(getConnection(data.toString())))
+        })
     } else if (path == '/get_turn') {
         let index = getIndex(info.token)
         if (index != undefined && connections[index][3] == info.char) {
