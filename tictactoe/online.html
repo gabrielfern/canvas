@@ -5,43 +5,6 @@
         <link href="assets/Tic_tac_toe.png" rel="shortcut icon" type="image/png"/>
         <link rel="stylesheet" type="text/css" href="stylish.css"/>
 
-        <style>
-            body {
-                margin: 0;
-                color: #a50005;
-                font-family: Monospace
-            }
-            div {
-                background-color: #3f3f3f;
-                margin-top: 15px;
-                margin-bottom: 15px;
-                margin-left: 10px;
-                margin-right: 10px;
-                border-style: solid;
-                border-color: #a50005;
-                border-width: 2px;
-                border-radius: 5px;
-                padding: 10px;
-                font-size: 20px;
-                text-align: center
-            }
-            input {
-                color: #a50005;
-                font-family: Monospace;
-                font-size: 20px;
-                text-align: center;
-                background-image: url(assets/dot-paper.png);
-                height: 40px;
-                border-style: solid;
-                border-color: #a50005;
-                border-width: 2px;
-                border-radius: 5px;
-            }
-            p:hover {
-                cursor: pointer
-            }
-        </style>
-
         <script>
             function main() {
                 const canvas = document.querySelector('canvas'),
@@ -289,10 +252,10 @@
                 //connect()
             }
             function search() {
-                const div = document.querySelector('#toHide')
-                      div2 = document.querySelector('#toShow')
-                      span = document.querySelector('pre')
-                let dotsStage = 1
+                let div = document.querySelector('#toHide'),
+                    div2 = document.querySelector('#toShow'),
+                    span = document.querySelector('pre'),
+                    dotsStage = 1
                 div.style.display = 'none'
                 div2.style.display = 'block'
                 span.innerText = 'Searching   '
@@ -311,16 +274,28 @@
                         dotsStage++
                 }, 1000)
             }
+            function setToInput() {
+                let input = document.querySelector('input')
+                input.focus()
+            }
+            addEventListener('keypress', (event) => {
+                if (event.key == 'Enter') {
+                    let input = document.querySelector('input')
+                    if (document.activeElement == input) {
+                        search()
+                    }
+                }
+            })
         </script>
     </head>
 
     <body onload='main()' background="assets/dot-paper.png">
-        <div id='toHide'>
-            <p>Give us a nickname</p>
-            <input type='text'></input>
+        <div class='top' id='toHide'>
+            <p onclick='setToInput()'>Give us a nickname</p>
+            <input type='text' maxlength='8'></input>
             <p onclick='search()'>Search opponent</p>
         </div>
-        <div id='toShow' style='display: none'>
+        <div class='top' id='toShow' style='display: none'>
             <pre></pre>
         </div>
         <canvas style='display: none'></canvas>

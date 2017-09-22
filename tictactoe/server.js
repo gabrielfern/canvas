@@ -117,6 +117,7 @@ http.createServer((req, res) => {
     } else if (path == '/assets/dot-paper.png') {
         res.end(patt)
     } else if (path == '/stylish.css') {
+        res.setHeader('Content-Type', 'text/css')
         res.end(css)
     } else if (path == '/offline') {
         res.end(offline)
