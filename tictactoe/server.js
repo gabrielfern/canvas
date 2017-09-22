@@ -9,6 +9,7 @@ const http = require('http'),
       online = fs.readFileSync('online.html'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
       patt = fs.readFileSync('assets/dot-paper.png'),
+      css = fs.readFileSync('stylish.css'),
       maxConnections = 30,
       tokenLeng = 10,
       timeout = 10
@@ -115,6 +116,8 @@ http.createServer((req, res) => {
         res.end(logo)
     } else if (path == '/assets/dot-paper.png') {
         res.end(patt)
+    } else if (path == '/stylish.css') {
+        res.end(css)
     } else if (path == '/offline') {
         res.end(offline)
     } else if (path == '/online') {

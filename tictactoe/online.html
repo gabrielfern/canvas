@@ -1,14 +1,51 @@
 <html>
     <head>
         <title>Tic Tac Toe - Online</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="assets/Tic_tac_toe.png" rel="shortcut icon" type="image/png"/>
+        <link rel="stylesheet" type="text/css" href="stylish.css"/>
+
+        <style>
+            body {
+                margin: 0;
+                color: #a50005;
+                font-family: Monospace
+            }
+            div {
+                background-color: #3f3f3f;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                margin-left: 10px;
+                margin-right: 10px;
+                border-style: solid;
+                border-color: #a50005;
+                border-width: 2px;
+                border-radius: 5px;
+                padding: 10px;
+                font-size: 20px;
+                text-align: center
+            }
+            input {
+                color: #a50005;
+                font-family: Monospace;
+                font-size: 20px;
+                text-align: center;
+                background-image: url(assets/dot-paper.png);
+                height: 40px;
+                border-style: solid;
+                border-color: #a50005;
+                border-width: 2px;
+                border-radius: 5px;
+            }
+            p:hover {
+                cursor: pointer
+            }
+        </style>
 
         <script>
             function main() {
                 const canvas = document.querySelector('canvas'),
-                      ctx = canvas.getContext('2d'),
-                      img = document.querySelector('img'),
-                      pattern = ctx.createPattern(img, 'repeat')
+                      ctx = canvas.getContext('2d')
                 let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
@@ -75,14 +112,9 @@
                         ctx.stroke()
                     }
                 }
-                function drawBg() {
-                    topBar = innerHeight / 30
-                    ctx.fillStyle = pattern
-                    ctx.fillRect(0, topBar, innerWidth, innerHeight)
-                }
                 function drawGrid() {
                     ctx.clearRect(0, 0, innerWidth, innerHeight)
-                    drawBg()
+                    topBar = innerHeight / 30
                     calcLineWidth()
                     calcFontSize()
                     calcGrid()
@@ -254,13 +286,43 @@
                     }
                     xhr2.send()
                 }
-                connect()
+                //connect()
+            }
+            function search() {
+                const div = document.querySelector('#toHide')
+                      div2 = document.querySelector('#toShow')
+                      span = document.querySelector('pre')
+                let dotsStage = 1
+                div.style.display = 'none'
+                div2.style.display = 'block'
+                span.innerText = 'Searching   '
+                setInterval(() => {
+                    if (dotsStage == 0)
+                        span.innerText = 'Searching' + '   '
+                    else if (dotsStage == 1)
+                        span.innerText = 'Searching' + '.  '
+                    else if (dotsStage == 2)
+                        span.innerText = 'Searching' + '.. '
+                    else
+                        span.innerText = 'Searching' + '...'
+                    if (dotsStage > 2)
+                        dotsStage = 0
+                    else
+                        dotsStage++
+                }, 1000)
             }
         </script>
     </head>
 
-    <body style='margin: 0; width: 100%' onload='main()'>
-        <canvas style='display: block'></canvas>
-        <img src='assets/dot-paper.png' style='display: none'/>
+    <body onload='main()' background="assets/dot-paper.png">
+        <div id='toHide'>
+            <p>Give us a nickname</p>
+            <input type='text'></input>
+            <p onclick='search()'>Search opponent</p>
+        </div>
+        <div id='toShow' style='display: none'>
+            <pre></pre>
+        </div>
+        <canvas style='display: none'></canvas>
     </body>
 </html>
