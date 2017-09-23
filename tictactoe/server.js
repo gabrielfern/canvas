@@ -82,15 +82,18 @@ http.createServer((req, res) => {
         query = url.query,
         info = querystring.parse(query)
 
-    if (path == '/connect') {
-        res.end(JSON.stringify(getConnection()))
-    } else if (path == '/get_game') {
+    if (path == '/get_game') {
         let index = getIndex(info.token)
         if (index != undefined) {
-            if (connections[index][1] > 0)
+            if (connections[index][1] > 0) {
+                connections[index][0] = timeout + 1
+                connections[index][1] = timeout
                 res.end(connections[index][6])
-            else
+            }
+            else {
+                connections[index][0] = 3
                 res.end()
+            }
         } else {
             res.end()
         }
@@ -102,9 +105,9 @@ http.createServer((req, res) => {
         let index = getIndex(info.token)
         if (index != undefined && connections[index][3] == info.char) {
             if (info.char == 'X')
-                connections[index][0] = timeout
+                connections[index][0] = timeout + 1
             else
-                connections[index][1] = timeout
+                connections[index][1] = timeout + 1
             res.end(JSON.stringify(connections[index][4]))
         } else {
             res.end()
