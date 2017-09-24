@@ -6,7 +6,8 @@
         <link rel="stylesheet" type="text/css" href="stylish.css"/>
 
         <script>
-            function main(timeout, timeCount, timeFactor, char, token) {
+            function main(timeout, timeCount, timeFactor, char, token, playerX,
+                            playerO) {
                 const canvas = document.querySelector('canvas'),
                       ctx = canvas.getContext('2d')
                 let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
@@ -14,6 +15,7 @@
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
                     charAtMoment = 'X',
                     turn = false,
+                    draw = false,
                     winnerLine
 
                 function calcLineWidth() {
@@ -60,6 +62,10 @@
                     ctx.lineTo(grid[yEnd][xEnd][0] + grid[yEnd][xEnd][2]/2,
                                grid[yEnd][xEnd][1] + grid[yEnd][xEnd][3]/2)
                     ctx.stroke()
+                    if (grid[yBegin][xBegin][4] == 'X')
+                        setGameBarContent(playerX)
+                    else
+                        setGameBarContent(playerO)
                 }
                 function drawTimeBar() {
                     if (timeCount > 0) {
@@ -75,7 +81,7 @@
                     calcFontSize()
                     calcGrid()
                     ctx.lineCap = 'round'
-                    if (turn)
+                    if (turn || winnerLine || draw)
                         ctx.strokeStyle = '#a50005'
                     else
                         ctx.strokeStyle = '#a05154'
@@ -91,7 +97,7 @@
                     ctx.lineTo(innerWidth/3 * 2, 25)
                     ctx.stroke()
                     drawChars()
-                    if (timeout)
+                    if (winnerLine == undefined && !draw)
                         drawTimeBar()
                     if (winnerLine)
                         drawWinnerLine(winnerLine[0], winnerLine[1],
@@ -160,13 +166,26 @@
                         }
                     }
                 }
+                function drawResult() {
+                    charsSum = 0
+                    for (innerList of grid) {
+                        for (deepthList of innerList) {
+                            if (deepthList[4] != '')
+                                charsSum++
+                        }
+                    }
+                    if (charsSum == 9) {
+                        draw = true
+                        setGameBarContent('draw')
+                    }
+                }
                 function resizeHandler() {
                     canvas.width = innerWidth
                     canvas.height = innerHeight - 50
                     drawGrid()
                 }
                 function clickHandler(e) {
-                    if (turn) {
+                    if (turn && winnerLine == undefined && !draw) {
                         let belongs = belongTo(e.x, e.y - 50)
                         if (belongs) {
                             let y = belongs[0],
@@ -174,6 +193,7 @@
                             if (grid[y][x][4] == '') {
                                 drawChar(char, grid[y][x])
                                 hasWinner()
+                                drawResult()
                                 let xhr = new XMLHttpRequest()
                                 xhr.open('POST',
                                         `/set_turn?char=${char}&token=${token}`)
@@ -192,8 +212,10 @@
                 addEventListener('resize', resizeHandler)
                 resizeHandler()
                 let timeHandler = () => {
-                    drawGrid()
-                    timeCount--
+                    if (winnerLine == undefined && !draw) {
+                        drawGrid()
+                        timeCount--
+                    }
                 }
                 timeHandler()
                 setInterval(timeHandler, timeout*1000 / timeFactor)
@@ -202,7 +224,7 @@
                     drawGrid()
                 }
                 setInterval(() => {
-                    if (!turn) {
+                    if (!turn && winnerLine == undefined && !draw) {
                         let xhr = new XMLHttpRequest()
                         xhr.open('GET',
                                 `/get_turn?char=${char}&token=${token}`)
@@ -213,6 +235,7 @@
                                 drawChar(charAtMoment,
                                          grid[resp[0]][resp[1]])
                                 hasWinner()
+                                drawResult()
                                 if (charAtMoment == 'X')
                                     charAtMoment = 'O'
                                 else
@@ -227,10 +250,18 @@
                 }, 500)
                 canvas.addEventListener('click', clickHandler)
             }
+            function setGameBarContent(string) {
+                let span = document.querySelector('#opp'),
+                    span2 = document.querySelector('#mid-span'),
+                    span3 = document.querySelector('#opp2')
+                span.innerText = ''
+                span2.innerText = string
+                span3.innerText = ''
+            }
             function search() {
                 let input = document.querySelector('input'),
                     nicknameTitle = document.querySelector('#nicknameTitle')
-                if (input.value.length > 3) {
+                if (input.value.trim().length > 3) {
                     let div = document.querySelector('#toHide'),
                         div2 = document.querySelector('#toShow'),
                         pre = document.querySelector('pre'),
@@ -270,8 +301,7 @@
                         let char,
                             token,
                             xhr2 = new XMLHttpRequest(),
-                            inputValue = input.value
-                        inputValue += ' '.repeat(8 - inputValue.length)
+                            inputValue = input.value.trim()
                         xhr2.open('POST', '/set_game')
                         xhr2.onload = () => {
                             let resp = JSON.parse(xhr2.response)
@@ -283,7 +313,8 @@
                                 div2.style.display = 'none'
                                 gameBar.style.display = 'block'
                                 canvas.style.display = 'block'
-                                main(timeout, timeCount, timeFactor, char, token)
+                                main(timeout, timeCount, timeFactor, char, token,
+                                        resp[2], inputValue)
                             } else {
                                 opp.innerText = inputValue
                                 char = resp[0]
@@ -299,7 +330,8 @@
                                             div2.style.display = 'none'
                                             gameBar.style.display = 'block'
                                             canvas.style.display = 'block'
-                                            main(timeout, timeCount, timeFactor, char, token)
+                                            main(timeout, timeCount, timeFactor,
+                                                 char, token, inputValue, resp2)
                                         }
                                     }
                                     xhr.send()
@@ -339,7 +371,7 @@
         </div>
         <div class='top' id='game-bar' style='display: none'>
             <span id='opp'>opponent</span>
-            <span>vs</span>
+            <span id='mid-span'>vs</span>
             <span id='opp2'>opponent2</span>
         </div>
         <canvas style='display: none'></canvas>

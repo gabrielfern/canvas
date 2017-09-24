@@ -156,15 +156,17 @@
                 addEventListener('resize', resizeHandler)
                 resizeHandler()
                 function clickHandler(e) {
-                    let belongs = belongTo(e.x, e.y)
-                    if (belongs) {
-                        if (belongs[4] == '') {
-                            drawChar(charAtMoment, belongs)
-                            hasWinner()
-                            if (charAtMoment == 'X')
-                                charAtMoment = 'O'
-                            else
-                                charAtMoment = 'X'
+                    if (winnerLine == undefined) {
+                        let belongs = belongTo(e.x, e.y)
+                        if (belongs) {
+                            if (belongs[4] == '') {
+                                drawChar(charAtMoment, belongs)
+                                hasWinner()
+                                if (charAtMoment == 'X')
+                                    charAtMoment = 'O'
+                                else
+                                    charAtMoment = 'X'
+                            }
                         }
                     }
                 }
