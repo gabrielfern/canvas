@@ -139,7 +139,9 @@ http.createServer((req, res) => {
         req.on('data', (data) => {
             fs.stat('games.log', (err, stat) => {
                 if (stat.size <= maxLogSize || stat == undefined)
-                    log2.write(`${data.toString()},${Date()}\n`)
+                    if (Buffer.byteLength(data.toString()) + stat.size <=
+                        maxLogSize)
+                        log2.write(`${data.toString()},${Date()}\n`)
             })
         })
     } else if (path == '/timeout') {

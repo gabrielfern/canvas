@@ -219,7 +219,7 @@
                 function resultLog(result) {
                     let xhr = new XMLHttpRequest()
                     xhr.open('POST', '/result_log')
-                    xhr.send(`${playerX},${playerO},${result}`)
+                    xhr.send(`${token},${playerX},${playerO},${result}`)
                 }
                 addEventListener('resize', resizeHandler)
                 resizeHandler()
