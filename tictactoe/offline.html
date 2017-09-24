@@ -1,14 +1,14 @@
 <html>
     <head>
         <title>Tic Tac Toe - Offline</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="assets/Tic_tac_toe.png" rel="shortcut icon" type="image/png"/>
+        <link rel="stylesheet" type="text/css" href="stylish.css"/>
 
         <script>
-            function main() {
+            function main(computer) {
                 const canvas = document.querySelector('canvas'),
-                      ctx = canvas.getContext('2d'),
-                      img = document.querySelector('img'),
-                      pattern = ctx.createPattern(img, 'repeat')
+                      ctx = canvas.getContext('2d')
                 let grid = [[[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']],
                             [[0, 0, 0, 0, ''], [0, 0, 0, 0, ''], [0, 0, 0, 0, '']]],
@@ -60,11 +60,8 @@
                                grid[yEnd][xEnd][1] + grid[yEnd][xEnd][3]/2)
                     ctx.stroke()
                 }
-                function drawBg() {
-                    ctx.fillStyle = pattern
-                    ctx.fillRect(0, 0, innerWidth, innerHeight)
-                }
                 function drawGrid() {
+                    ctx.clearRect(0, 0, innerWidth, innerHeight)
                     calcLineWidth()
                     calcFontSize()
                     calcGrid()
@@ -147,10 +144,23 @@
                         }
                     }
                 }
+                function computerAction() {
+                    let randomIndex = () => Math.floor(Math.random()*3)
+                    for (let i = 0; i < 9; i++) {
+                        let position = grid[randomIndex()][randomIndex()]
+                        if (position[4] == '') {
+                            drawChar(charAtMoment, position)
+                            if (charAtMoment == 'X')
+                                charAtMoment = 'O'
+                            else
+                                charAtMoment = 'X'
+                            break
+                        }
+                    }
+                }
                 function resizeHandler() {
                     canvas.width = innerWidth
                     canvas.height = innerHeight
-                    drawBg()
                     drawGrid()
                 }
                 addEventListener('resize', resizeHandler)
@@ -166,17 +176,31 @@
                                     charAtMoment = 'O'
                                 else
                                     charAtMoment = 'X'
+                                if (computer && winnerLine == undefined) {
+                                    computerAction()
+                                    hasWinner()
+                                }
                             }
                         }
                     }
                 }
-                addEventListener('click', clickHandler)
+                canvas.addEventListener('click', clickHandler)
+            }
+            function init(computer) {
+                let div = document.querySelector('div'),
+                    canvas = document.querySelector('canvas')
+                div.style.display = 'none'
+                canvas.style.display = 'block'
+                main(computer)
             }
         </script>
     </head>
 
-    <body style='margin: 0' onload='main()'>
-        <canvas style='display: block'></canvas>
-        <img src='assets/dot-paper.png' style='display: none'/>
+    <body>
+        <div class='top'>
+            <p onclick='init(true)'>Play with computer</p>
+            <p onclick='init(false)'>Play with a friend</p>
+        </div>
+        <canvas style='display: none'></canvas>
     </body>
 </html>
