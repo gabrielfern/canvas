@@ -10,6 +10,7 @@ const http = require('http'),
       logo = fs.readFileSync('assets/Tic_tac_toe.png'),
       patt = fs.readFileSync('assets/dot-paper.png'),
       css = fs.readFileSync('stylish.css'),
+      log = fs.createWriteStream('connections.log', {flags: 'a'}),
       maxConnections = 30,
       tokenLeng = 10,
       timeout = 10
@@ -82,6 +83,8 @@ http.createServer((req, res) => {
         query = url.query,
         info = querystring.parse(query)
 
+    if (path != '/on_count' && path != '/get_game' && path != '/get_turn')
+        log.write(`${path},${req.connection.remoteAddress},${Date()}\n`)
     if (path == '/get_game') {
         let index = getIndex(info.token)
         if (index != undefined) {
