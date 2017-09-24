@@ -11,7 +11,9 @@ const http = require('http'),
       patt = fs.readFileSync('assets/dot-paper.png'),
       css = fs.readFileSync('stylish.css'),
       log = fs.createWriteStream('connections.log', {flags: 'a'}),
+      log2 = fs.createWriteStream('games.log', {flags: 'a'}),
       maxConnections = 30,
+      maxLogSize = 1000000,
       tokenLeng = 10,
       timeout = 10
 
@@ -84,7 +86,10 @@ http.createServer((req, res) => {
         info = querystring.parse(query)
 
     if (path != '/on_count' && path != '/get_game' && path != '/get_turn')
-        log.write(`${path},${req.connection.remoteAddress},${Date()}\n`)
+        fs.stat('connections.log', (err, stat) => {
+            if (stat.size <= maxLogSize || stat == undefined)
+                log.write(`${path},${req.connection.remoteAddress},${Date()}\n`)
+        })
     if (path == '/get_game') {
         let index = getIndex(info.token)
         if (index != undefined) {
@@ -130,6 +135,13 @@ http.createServer((req, res) => {
             }
         }
         res.end()
+    } else if (path == '/result_log') {
+        req.on('data', (data) => {
+            fs.stat('games.log', (err, stat) => {
+                if (stat.size <= maxLogSize || stat == undefined)
+                    log2.write(`${data.toString()},${Date()}\n`)
+            })
+        })
     } else if (path == '/timeout') {
         res.end(`${timeout}`)
     } else if (path == '/on_count') {

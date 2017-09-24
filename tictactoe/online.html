@@ -62,10 +62,6 @@
                     ctx.lineTo(grid[yEnd][xEnd][0] + grid[yEnd][xEnd][2]/2,
                                grid[yEnd][xEnd][1] + grid[yEnd][xEnd][3]/2)
                     ctx.stroke()
-                    if (grid[yBegin][xBegin][4] == 'X')
-                        setGameBarContent(playerX)
-                    else
-                        setGameBarContent(playerO)
                 }
                 function drawTimeBar() {
                     if (timeCount > 0) {
@@ -177,6 +173,7 @@
                     if (charsSum == 9) {
                         draw = true
                         setGameBarContent('draw')
+                        resultLog('draw')
                     }
                 }
                 function resizeHandler() {
@@ -192,8 +189,18 @@
                                 x = belongs[1]
                             if (grid[y][x][4] == '') {
                                 drawChar(char, grid[y][x])
-                                hasWinner()
                                 drawResult()
+                                hasWinner()
+                                if (winnerLine) {
+                                    if (grid[winnerLine[1]][winnerLine[0]][4]
+                                            == 'X') {
+                                        setGameBarContent(playerX)
+                                        resultLog(playerX)
+                                    } else {
+                                        setGameBarContent(playerO)
+                                        resultLog(playerO)
+                                    }
+                                }
                                 let xhr = new XMLHttpRequest()
                                 xhr.open('POST',
                                         `/set_turn?char=${char}&token=${token}`)
@@ -208,6 +215,11 @@
                             }
                         }
                     }
+                }
+                function resultLog(result) {
+                    let xhr = new XMLHttpRequest()
+                    xhr.open('POST', '/result_log')
+                    xhr.send(`${playerX},${playerO},${result}`)
                 }
                 addEventListener('resize', resizeHandler)
                 resizeHandler()
@@ -234,8 +246,18 @@
                                 resp = JSON.parse(resp)
                                 drawChar(charAtMoment,
                                          grid[resp[0]][resp[1]])
-                                hasWinner()
                                 drawResult()
+                                hasWinner()
+                                if (winnerLine) {
+                                    if (grid[winnerLine[1]][winnerLine[0]][4]
+                                            == 'X') {
+                                        setGameBarContent(playerX)
+                                        resultLog(playerX)
+                                    } else {
+                                        setGameBarContent(playerO)
+                                        resultLog(playerO)
+                                    }
+                                }
                                 if (charAtMoment == 'X')
                                     charAtMoment = 'O'
                                 else
