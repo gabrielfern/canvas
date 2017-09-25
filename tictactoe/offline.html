@@ -53,7 +53,6 @@
                     }
                 }
                 function drawWinnerLine(xBegin, yBegin, xEnd, yEnd) {
-                    winnerLine = [xBegin, yBegin, xEnd, yEnd]
                     ctx.moveTo(grid[yBegin][xBegin][0] + grid[yBegin][xBegin][2]/2,
                                grid[yBegin][xBegin][1] + grid[yBegin][xBegin][3]/2)
                     ctx.lineTo(grid[yEnd][xEnd][0] + grid[yEnd][xEnd][2]/2,
@@ -93,7 +92,7 @@
                         }
                     }
                 }
-                function hasWinner() {
+                function hasWinner(drawLine) {
                     if (winnerLine == undefined) {
                         for (let x = 0; x < 3; x++) {
                             let matchup = 1
@@ -104,7 +103,9 @@
                                 }
                             }
                             if (matchup > 2) {
-                                drawWinnerLine(x, 0, x, 2)
+                                if (drawLine)
+                                    drawWinnerLine(x, 0, x, 2)
+                                winnerLine = [x, 0, x, 2]
                                 return
                             }
                         }
@@ -117,7 +118,9 @@
                                 }
                             }
                             if (matchup > 2) {
-                                drawWinnerLine(0, y, 2, y)
+                                if (drawLine)
+                                    drawWinnerLine(0, y, 2, y)
+                                winnerLine = [0, y, 2, y]
                                 return
                             }
                         }
@@ -129,7 +132,9 @@
                             }
                         }
                         if (matchup > 2) {
-                            drawWinnerLine(0, 0, 2, 2)
+                            if (drawLine)
+                                drawWinnerLine(0, 0, 2, 2)
+                            winnerLine = [0, 0, 2, 2]
                             return
                         }
                         matchup = 1
@@ -140,12 +145,52 @@
                             }
                         }
                         if (matchup > 2) {
-                            drawWinnerLine(2, 0, 0, 2)
+                            if (drawLine)
+                                drawWinnerLine(2, 0, 0, 2)
+                            winnerLine = [2, 0, 0, 2]
                         }
                     }
                 }
                 function computerAction() {
                     let randomIndex = () => Math.floor(Math.random()*3)
+                    for (innerList of grid) {
+                        for (deepthList of innerList) {
+                            if (deepthList[4] == '') {
+                                deepthList[4] = 'O'
+                                hasWinner(false)
+                                if (winnerLine != undefined) {
+                                    drawChar('O', deepthList)
+                                    winnerLine = undefined
+                                    if (charAtMoment == 'X')
+                                        charAtMoment = 'O'
+                                    else
+                                        charAtMoment = 'X'
+                                    return
+                                } else {
+                                    deepthList[4] = ''
+                                }
+                            }
+                        }
+                    }
+                    for (innerList of grid) {
+                        for (deepthList of innerList) {
+                            if (deepthList[4] == '') {
+                                deepthList[4] = 'X'
+                                hasWinner(false)
+                                if (winnerLine != undefined) {
+                                    drawChar('O', deepthList)
+                                    winnerLine = undefined
+                                    if (charAtMoment == 'X')
+                                        charAtMoment = 'O'
+                                    else
+                                        charAtMoment = 'X'
+                                    return
+                                } else {
+                                    deepthList[4] = ''
+                                }
+                            }
+                        }
+                    }
                     for (let i = 0; i < 9; i++) {
                         let position = grid[randomIndex()][randomIndex()]
                         if (position[4] == '') {
@@ -171,14 +216,14 @@
                         if (belongs) {
                             if (belongs[4] == '') {
                                 drawChar(charAtMoment, belongs)
-                                hasWinner()
+                                hasWinner(true)
                                 if (charAtMoment == 'X')
                                     charAtMoment = 'O'
                                 else
                                     charAtMoment = 'X'
                                 if (computer && winnerLine == undefined) {
                                     computerAction()
-                                    hasWinner()
+                                    hasWinner(true)
                                 }
                             }
                         }

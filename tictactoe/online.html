@@ -172,7 +172,7 @@
                     }
                     if (charsSum == 9) {
                         draw = true
-                        setGameBarContent('draw')
+                        setGameBarContent('draw', char, playerX, playerO)
                         resultLog('draw')
                     }
                 }
@@ -194,10 +194,12 @@
                                 if (winnerLine) {
                                     if (grid[winnerLine[1]][winnerLine[0]][4]
                                             == 'X') {
-                                        setGameBarContent(playerX)
+                                        setGameBarContent(playerX, char,
+                                                    playerX, playerO)
                                         resultLog(playerX)
                                     } else {
-                                        setGameBarContent(playerO)
+                                        setGameBarContent(playerO, char,
+                                                    playerX, playerO)
                                         resultLog(playerO)
                                     }
                                 }
@@ -251,10 +253,12 @@
                                 if (winnerLine) {
                                     if (grid[winnerLine[1]][winnerLine[0]][4]
                                             == 'X') {
-                                        setGameBarContent(playerX)
+                                        setGameBarContent(playerX, char,
+                                                            playerX, playerO)
                                         resultLog(playerX)
                                     } else {
-                                        setGameBarContent(playerO)
+                                        setGameBarContent(playerO, char,
+                                                            playerX, playerO)
                                         resultLog(playerO)
                                     }
                                 }
@@ -272,13 +276,36 @@
                 }, 500)
                 canvas.addEventListener('click', clickHandler)
             }
-            function setGameBarContent(string) {
+            function setGameBarContent(string, char, playerX, playerO) {
                 let span = document.querySelector('#opp'),
                     span2 = document.querySelector('#mid-span'),
-                    span3 = document.querySelector('#opp2')
-                span.innerText = ''
-                span2.innerText = string
-                span3.innerText = ''
+                    span3 = document.querySelector('#opp2'),
+                    parag = document.querySelector('#perfumery'),
+                    input = document.querySelector('input')
+
+                parag.innerText = string
+                span.style.display = 'none'
+                span2.style.display = 'none'
+                span3.style.display = 'none'
+                parag.style.display = 'inline'
+                input.value = char == 'X'? playerX : playerO
+            }
+            function reset() {
+                let span = document.querySelector('#opp'),
+                    span2 = document.querySelector('#mid-span'),
+                    span3 = document.querySelector('#opp2'),
+                    parag = document.querySelector('#perfumery'),
+                    div = document.querySelector('#game-bar'),
+                    div2 = document.querySelector('#toHide'),
+                    canvas = document.querySelector('canvas')
+
+                div.style.display = 'none'
+                canvas.style.display = 'none'
+                div2.style.display = 'block'
+                span.style.display = 'inline'
+                span2.style.display = 'inline'
+                span3.style.display = 'inline'
+                parag.style.display = 'none'
             }
             function search() {
                 let input = document.querySelector('input'),
@@ -395,6 +422,7 @@
             <span id='opp'>opponent</span>
             <span id='mid-span'>vs</span>
             <span id='opp2'>opponent2</span>
+            <p id='perfumery' style='display: none' onclick='reset()'></p>
         </div>
         <canvas style='display: none'></canvas>
     </body>
