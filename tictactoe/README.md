@@ -7,3 +7,10 @@ run it with just
 or
 
     npm start
+
+
+![initial page screenshot](./assets/Screenshot_1.png)
+
+![offline hall screenshot](./assets/Screenshot_2.png)
+
+![online hall screenshot](./assets/Screenshot_3.png)
