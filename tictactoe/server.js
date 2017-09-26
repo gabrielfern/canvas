@@ -162,4 +162,4 @@ http.createServer((req, res) => {
     } else {
         res.end(html)
     }
-}).listen(port, host)
+}).listen(port, host, () => console.log('running at http://localhost:2100'))
