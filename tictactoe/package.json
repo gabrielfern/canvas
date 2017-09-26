@@ -1,6 +1,6 @@
 {
   "name": "tictactoe-game",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "stylish tictactoe game front-end(web) with nodejs server being able to play in a online manner",
   "main": "server.js",
   "scripts": {
