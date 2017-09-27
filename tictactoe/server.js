@@ -85,6 +85,8 @@ http.createServer((req, res) => {
         query = url.query,
         info = querystring.parse(query)
 
+    process.stdout.write(path)
+    process.stdout.write('\n')
     if (path != '/on_count' && path != '/get_game' && path != '/get_turn')
         fs.stat('connections.log', (err, stat) => {
             if (stat.size <= maxLogSize || stat == undefined)
