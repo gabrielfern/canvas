@@ -148,6 +148,8 @@ http.createServer((req, res) => {
         res.end(`${timeout}`)
     } else if (path == '/on_count') {
         res.end(`${getOnCount()}`)
+    } else if (path == '/robots.txt') {
+        res.end('User-agent: *\nDisallow: /online\n')
     } else if (path == '/assets/Tic_tac_toe.png') {
         res.end(logo)
     } else if (path == '/assets/dot-paper.png') {
